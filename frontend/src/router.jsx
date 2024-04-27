@@ -6,15 +6,10 @@ import NotFound from "./views/NotFound";
 import Signup from "./views/Signup";
 import User from "./views/User";
 import Home from "./views/Home.jsx";
-import GoogleCallback from "./components/GoogleCallback.jsx";
-import { Navigate } from "react-router-dom";
 import ResetPassword from "./views/ResetPassword.jsx";
-import NewPassword from "./views/NewPassword.jsx";
 import Projects from "./components/Projects.jsx";
-import UserAdmin from "./views/UserAdmin.jsx";
+import UserAdmin from "./views/UserAdmin/UsersAdmin.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import FormAccessSignUp from "./components/FormAccessSignUp.jsx";
-import Dashboardd1 from "./views/Dashboardd1.jsx";
 import ProjectDetails from "./components/ProjectDetails.jsx";
 import Profile from "./components/Profile.jsx";
 import Messanger from "./Pages/Chat/Messanger.jsx";
@@ -48,19 +43,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/projects",
-        element: (
-          <ProtectedRoute allowedRoles={["chef", "user", "member", "admin"]}>
-            <Projects />
-          </ProtectedRoute>
-        ),
+        element: <Projects />,
       },
       {
-        path: "/project/:projectId",
-        element: (
-          <ProtectedRoute allowedRoles={["chef", "user", "member", "admin"]}>
-            <ProjectDetails />
-          </ProtectedRoute>
-        ),
+        path: "/ProjectDetails",
+        element: <ProjectDetails />,
       },
       {
         path: "/userAdmin",
@@ -93,24 +80,16 @@ const router = createBrowserRouter([
         path: "/passwordreset",
         element: <ResetPassword />,
       },
-      {
-        path: "/newpassword",
-        element: <NewPassword />,
-      },
-      {
-        path: "/formAccess",
-        element: <FormAccessSignUp />,
-      },
     ],
   },
   {
     path: "*",
     element: <NotFound />,
   },
-  {
-    path: "dash",
-    element: <Dashboardd1 />,
-  },
+  // {
+  //   path: "dash",
+  //   element: <Dashboardd1 />,
+  // },
 ]);
 
 export default router;

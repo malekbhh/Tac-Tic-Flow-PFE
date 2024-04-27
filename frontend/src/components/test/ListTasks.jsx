@@ -2,30 +2,19 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDrag, useDrop } from "react-dnd";
 import axiosClient from "../../axios-client";
-import plus from "./plus.png";
 import bin from "./bin.png";
 import edittask from "./edittask.png";
 import CreateTask from "./CreateTask";
-import AddMemberTask from "../AddMemberTask";
 function ListTasks({ projectId, tasks, setTasks, isChef }) {
+  const handleEditTask = (task) => {
+    setSelectedTask(task);
+  };
+
   const [todos, setTodos] = useState([]);
   const [doings, setDoings] = useState([]);
   const [dones, setDones] = useState([]);
   const [closeds, setCloseds] = useState([]);
   const [editTask, setEditTask] = useState(false);
-
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axiosClient.get(`/projects/${projectId}/tasks`);
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    fetchTasks();
-  }, [projectId, setTasks]);
 
   useEffect(() => {
     const filteredTodos = tasks.filter((task) => task.status === "To Do");
@@ -56,6 +45,7 @@ function ListTasks({ projectId, tasks, setTasks, isChef }) {
           setEditTask={setEditTask}
           projectId={projectId}
           isChef={isChef}
+          onEditTask={handleEditTask}
         />
       ))}
     </div>
@@ -114,30 +104,13 @@ const Section = ({
 
   const canDrop = async (item) => {
     try {
-      // Faites une requête GET à la route '/user' pour récupérer les informations de l'utilisateur authentifié
-      const response = await axiosClient.get("/user");
-      const user = response.data;
-
-      if (!user) {
-        // Si aucun utilisateur n'est connecté, renvoyez false
-        return false;
-      }
-
-      // Récupérez l'ID de l'utilisateur connecté
-      const authenticatedUserId = user.id;
-
-      // Faites une requête POST à la route '/taskmemberships' pour vérifier si l'utilisateur peut déplacer la tâche
+      // Faites une requête POST à la route '/tasks/check-can-drop' pour vérifier si l'utilisateur peut déplacer la tâche
       const taskMembershipResponse = await axiosClient.post(
-        "/taskmemberships1",
-        {
-          taskId: item.id,
-          userId: authenticatedUserId,
-          projectId: projectId,
-        }
+        `/tasks/${item.id}/check-can-drop`,
+        { isChef }
       );
-
-      // Vérifiez si le task_id de la tâche déplacée correspond à un task_id auquel l'utilisateur est autorisé
-      return taskMembershipResponse.data.includes(item.id);
+      // Retourne true si l'utilisateur est autorisé à déplacer la tâche, sinon false
+      return true;
     } catch (error) {
       console.error("Error checking user permissions:", error);
       return false;
@@ -208,7 +181,7 @@ const Section = ({
     </div>
   );
 };
-const Header = ({ text, bg, setEditTask, count }) => {
+const Header = ({ text, bg, count }) => {
   return (
     <div
       className={`${bg} flex items-center h-12 pl-4 rounded-xl uppercase text-sm text-white`}

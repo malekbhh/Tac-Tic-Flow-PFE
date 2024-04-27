@@ -2,7 +2,6 @@ import React from "react";
 import NavbarHome from "../components/NavbarHome";
 import FooterHome from "../components/FooterHome";
 import { Link } from "react-router-dom";
-import FormAccessSignUp from "../components/FormAccessSignUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import FeatureCard from "../components/FeatureCard";
@@ -41,7 +40,8 @@ function Home() {
         transform
  hover:scale-105"
                 >
-                  Sign Up <i class="fa fa-user-plus" aria-hidden="true"></i>
+                  Verifiy Account existe or no
+                  <i class="fa fa-user-plus" aria-hidden="true"></i>
                 </button>
               </div>
             </div>

@@ -13,27 +13,7 @@ use Pusher\Pusher;
 
 class ChatController extends Controller
 {
-    public function index()
-    {
-        // Renvoyer des données JSON
-        return response()->json(['data' => 'me']);
-    }
-
-    public function selectUser($id)
-    {
-        $user=User::findOrFail($id);
-        $messages=Message::where(function($query) use($id){
-            $query->where('from',$id)->where('to',auth()->id());
-        })->orWhere(function($query) use($id){
-            $query->where('from',auth()->id())->where('to',$id);
-        })->get();
-
-        // Renvoyer les données JSON
-        return response()->json([
-            'user' => $user,
-            'chats' => $messages
-        ]);
-    }
+     //
     public function getUserMessages($userId)
     {
         // Récupérer l'ID de l'utilisateur authentifié
@@ -54,9 +34,8 @@ class ChatController extends Controller
         return response()->json(['messages' => $messages]);
     }
     
-
-    
-    public function sendMessage(StoreMessageRequest $request){
+    public function sendMessage(StoreMessageRequest $request)
+    {
         $msg = $request->get('message');
         $receiver_id = $request->get('receiver_id');
     
@@ -69,18 +48,18 @@ class ChatController extends Controller
         
         // Configuration de Pusher
       // Configuration de Pusher
-$options = [
-    'cluster' => 'eu',
-    'useTLS' => true
-];
+      $options = [
+       'cluster' => 'eu',
+       'useTLS' => true
+       ];
 
-// Création d'une instance de Pusher avec les bonnes valeurs pour les arguments
-$pusher = new Pusher(
-    '5d19fbc4e019d389965e', // auth key
-    '744f12f5db9c8327b21b', // secret key
-    '1786800', // app id
-    $options
-);
+       // Création d'une instance de Pusher avec les bonnes valeurs pour les arguments
+      $pusher = new Pusher(
+      '5d19fbc4e019d389965e', // auth key
+      '744f12f5db9c8327b21b', // secret key
+      '1786800', // app id
+       $options
+       );
  
 
         // Déclencher un événement avec Pusher

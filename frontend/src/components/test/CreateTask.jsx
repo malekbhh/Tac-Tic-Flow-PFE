@@ -11,25 +11,41 @@ function CreateTask({ projectId, setTasks }) {
   const [taskName, setTaskName] = useState("");
   const [dueDate, setDueDate] = useState(null);
   const [showInput, setShowInput] = useState(false);
+  const [deadlineError, setDeadlineError] = useState(""); // Nouvel état pour le message d'erreur de la deadline
+
   const handleShowInput = () => {
     setShowInput(true);
   };
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axiosClient.post(`/projects/${projectId}/tasks`, {
-        title: taskName,
-        dueDate: dueDate ? dueDate.toISOString().split("T")[0] : null, // Convertir la date au format YYYY-MM-DD
-      });
-      toast.success("Task created successfully!");
-      setTaskName("");
-      setDueDate(null); // Réinitialiser la date après la création de la tâche
-      setTasks((prevTasks) => [...prevTasks, response.data]);
-      setShowInput(false); // Cacher l'entrée après la création de la tâche
-    } catch (error) {
-      console.error("Error creating task:", error);
-      toast.error("Error creating task. Please try again.");
+    const today = new Date(); // Obtient la date d'aujourd'hui
+
+    // Vérifie si la date limite est antérieure à aujourd'hui
+    if (dueDate && dueDate < today) {
+      // Affiche un message d'erreur
+      setDeadlineError("Deadline must be from today or later.");
+      return;
+    } else {
+      // Efface le message d'erreur s'il existe déjà
+      setDeadlineError("");
+      try {
+        const response = await axiosClient.post(
+          `/projects/${projectId}/tasks`,
+          {
+            title: taskName,
+            dueDate: dueDate ? dueDate.toISOString().split("T")[0] : null, // Convertir la date au format YYYY-MM-DD
+          }
+        );
+        toast.success("Task created successfully!");
+        setTaskName("");
+        setDueDate(null); // Réinitialiser la date après la création de la tâche
+        setTasks((prevTasks) => [...prevTasks, response.data]);
+        setShowInput(false); // Cacher l'entrée après la création de la tâche
+      } catch (error) {
+        console.error("Error creating task:", error);
+        toast.error("Error creating task. Please try again.");
+      }
     }
   };
   const handleCloseInput = () => {
@@ -70,6 +86,9 @@ function CreateTask({ projectId, setTasks }) {
               placeholderText="Enter deadline"
               className="border-b-2 w-50   bg-transparent border-gray-300 px-2 p-1 focus:border-b-0   focus:outline-gray-300 focus:rounded-xl"
             />
+            {deadlineError && (
+              <p className="text-sm text-red-500">{deadlineError}</p>
+            )}
           </div>
 
           <div className="flex items-center justify-center px-2 py-2 gap-6 w-full">

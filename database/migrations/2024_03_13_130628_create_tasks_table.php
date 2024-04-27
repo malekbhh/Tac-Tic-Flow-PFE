@@ -13,7 +13,8 @@ class CreateTasksTable extends Migration
             $table->string('description')->nullable();
             $table->string('status')->default('To Do');
             $table->unsignedBigInteger('project_id');
-            $table->unsignedBigInteger('card_id')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+
             $table->date('due_date')->nullable(); 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->timestamps();

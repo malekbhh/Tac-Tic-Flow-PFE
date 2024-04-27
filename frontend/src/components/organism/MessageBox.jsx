@@ -7,8 +7,6 @@ const { TextArea } = Input;
 
 const MessageBox = ({ selected, setMessages, userId }) => {
   const [message, setMessage] = useState("");
-  const [userMessages, setUserMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (userId) {
       const pusher = new Pusher("5d19fbc4e019d389965e", {
@@ -39,65 +37,6 @@ const MessageBox = ({ selected, setMessages, userId }) => {
       setMessage("");
     }
   };
-
-  //   return (
-  //     <div>
-  //       <TextArea
-  //         rows={2}
-  //         disabled={!selected}
-  //         placeholder="Type your message and hit enter...."
-  //         value={message}
-  //         onChange={(e) => setMessage(e.target.value)}
-  //         onKeyDown={handleKeyPress}
-  //       />
-  //     </div>
-  //   );
-  // };
-
-  // export default MessageBox;
-
-  // import React, { useState, useEffect } from "react";
-  // import { Input } from "antd";
-  // import axiosClient from "../../axios-client";
-  // import Pusher from "pusher-js";
-
-  // const { TextArea } = Input;
-
-  // const MessageBox = ({ selected, setMessages, userId }) => {
-  //   const [message, setMessage] = useState("");
-  //   const [userMessages, setUserMessages] = useState([]);
-  //   const [loading, setLoading] = useState(false);
-  //   useEffect(() => {
-  //     if (userId) {
-  //       const pusher = new Pusher("5d19fbc4e019d389965e", {
-  //         cluster: "eu",
-  //       });
-  //       const chatChannel = pusher.subscribe("chat." + userId);
-  //       chatChannel.bind("MessageSent", (messageData) => {
-  //         setMessages((anciensMessages) => [...anciensMessages, messageData]);
-  //       });
-  //     }
-  //   }, [userId]);
-  //   const handleKeyPress = (e) => {
-  //     if (e.key === "Enter" && message.trim() !== "") {
-  //       axiosClient
-  //         .post("/send/message", {
-  //           message: message,
-  //           receiver_id: selected,
-  //         })
-  //         // Dans le composant MessageBox
-  //         // Dans le composant MessageBox
-  //         .then((res) => {
-  //           setMessages((prevItems) => [...prevItems, res.data.message]);
-  //         })
-
-  //         .catch((error) => {
-  //           console.log(error?.response?.data?.message);
-  //         });
-  //       setMessage("");
-  //     }
-  //   };
-
   return (
     <div className="w-full ">
       <TextArea

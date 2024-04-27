@@ -20,18 +20,14 @@ class Project extends Model
         'description' => 'required|string',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-    // Project.php
-
+ 
     public function tasks()
     {
         return $this->hasMany(Task::class);
     }
-    public function memberships()
+    public function users()
     {
-        return $this->hasMany(Membership::class);
-    }
+        return $this->belongsToMany(User::class, 'memberships')
+                    ->withPivot('user_role'); // Si vous avez d'autres colonnes pivot, ajoutez-les ici
+    }   
 }

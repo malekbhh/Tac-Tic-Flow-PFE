@@ -1,175 +1,54 @@
-// import React, { useState, useEffect } from "react";
-// import axiosClient from "../axios-client.js";
-// import { useSelector } from "react-redux";
-// import bin from "../assets/bin.png";
-// import Alert from "./Alert";
-// import toast, { Toaster } from "react-hot-toast";
-// import search from "../assets/search.png";
-// import { Link } from "react-router-dom";
-// const Projects = () => {
-//   const [projects, setProjects] = useState([]);
-//   const [showAlert, setShowAlert] = useState(false);
-//   const [alertType, setAlertType] = useState("danger");
-//   const [alertMessage, setAlertMessage] = useState("");
-//   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-//   const [loadProjectsError, setLoadProjectsError] = useState(null);
-
-//   const loadProjects = async () => {
-//     setIsLoadingProjects(true);
-//     try {
-//       const response = await axiosClient.get("/projects", {
-//         headers: {
-//           "X-CSRF-TOKEN": axiosClient.defaults.headers.common["X-CSRF-TOKEN"],
-//         },
-//       });
-//       setProjects(response.data);
-//       setLoadProjectsError(null); // Clear any previous errors
-//     } catch (error) {
-//       console.error("Erreur lors du chargement des projets :", error);
-//     } finally {
-//       setIsLoadingProjects(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     const xsrfTokenMatch = document.cookie.match(/XSRF-TOKEN=(.+);/);
-//     const csrfToken = xsrfTokenMatch ? xsrfTokenMatch[1] : null;
-//     if (csrfToken) {
-//       axiosClient.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
-//       loadProjects();
-//     }
-//   }, []);
-
-//   const deleteProject = async (projectId) => {
-//     if (
-//       window.confirm(
-//         "Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible."
-//       )
-//     ) {
-//       try {
-//         await axiosClient.delete(`/projects/${projectId}`, {
-//           withCredentials: true,
-//         });
-//         toast.success("Project deleted successfully!");
-//         loadProjects();
-//       } catch (error) {
-//         toast.error("Error deleting project!");
-//         console.error(
-//           `Erreur lors de la suppression du projet : ${error.message}`
-//         );
-//       }
-//     }
-//   };
-
-//   return (
-//     <div className="container w-full h-fit  pt-11 p-8  text-white">
-//       {/* search bar */}
-//       <div className=" fixed top-6 flex mt-2  items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
-//         <input
-//           type="text"
-//           className="bg-transparent w-80 focus:outline-none text-white "
-//         />
-//         <img src={search} alt="search icon" className="h-4 text-slate-500" />
-//       </div>
-//       <div className="w-80 mb-2">
-//         {showAlert && (
-//           <Alert
-//             type={alertType}
-//             message={alertMessage}
-//             onClose={() => setShowAlert(false)}
-//           />
-//         )}
-//       </div>
-//       <h3 className="dark:text-gray-300 text-gray-600 font-semibold mx-4 mb-8">
-//         Projects
-//       </h3>
-//       {loadProjectsError ? (
-//         <p className="text-red-500">{loadProjectsError}</p>
-//       ) : isLoadingProjects ? (
-//         <p>Loading projects...</p>
-//       ) : (
-//         <div className="grid grid-cols-1  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5 gap-5">
-//           {Array.isArray(projects) && projects.length > 0 ? (
-//             projects.map((project) => (
-//               <div key={project.id} className="mb-4 w-72 h-300">
-//                 <Link to={`/project/${project.id}`}>
-//                   <div className="dark:bg-black relative dark:bg-opacity-30 bg-white bg-opacity-30 rounded-lg overflow-hidden h-60 shadow-md flex flex-col">
-//                     <div className="p-4 flex-1 overflow-y-auto">
-//                       <h2
-//                         className=" font-semibold text-gray-800 dark:text-white mb-2"
-//                         style={{ fontSize: "small" }}
-//                       >
-//                         {project.title}
-//                       </h2>
-//                       <p
-//                         className="text-gray-600 dark:text-gray-300 "
-//                         style={{ fontSize: "small" }}
-//                       >
-//                         {project.description}
-//                       </p>
-//                       {project.deadline && (
-//                         <p
-//                           className="text-gray-500 absolute bottom-4  flex  items-end dark:text-gray-400 "
-//                           style={{ fontSize: "small" }}
-//                         >
-//                           Deadline:{" "}
-//                           {new Date(project.deadline).toLocaleDateString()}
-//                         </p>
-//                       )}
-//                     </div>
-//                     <div className="flex justify-end p-4">
-//                       <button
-//                         onClick={(e) => {
-//                           e.preventDefault(); // Prevent the Link from triggering
-//                           deleteProject(project.id);
-//                         }}
-//                         className="text-red-500 hover:text-red-700"
-//                       >
-//                         Supprimer
-//                       </button>
-//                     </div>
-//                   </div>
-//                 </Link>
-//               </div>
-//             ))
-//           ) : (
-//             <p>Aucun projet trouvé.</p>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Projects;
-
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios-client.js";
 import { Link } from "react-router-dom";
 import search from "../assets/search.png";
+import toast from "react-hot-toast";
+import { useStateContext } from "../context/ContextProvider.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Projects = () => {
-  const [chefProjects, setChefProjects] = useState([]);
+  const { chefProjects, setChefProjects } = useStateContext();
+
   const [memberProjects, setMemberProjects] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [filteredChefProjects, setFilteredChefProjects] = useState([]);
+  const [filteredMemberProjects, setFilteredMemberProjects] = useState([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [loadProjectsError, setLoadProjectsError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleClick = (projectId, project) => {
+    // Vérifie si le projet est dans la liste chefProjects
+    const isChef = chefProjects.some((p) => p.id === projectId);
+    navigate("/ProjectDetails", { state: { projectId, project, isChef } });
+  };
 
   const handleSearchInputChange = (e) => {
-    setSearchValue(e.target.value);
+    const value = e.target.value;
+    setSearchValue(value);
+    filterProjects(value);
+  };
+
+  const filterProjects = (value) => {
+    const chefFiltered = chefProjects.filter((project) =>
+      project.title.toLowerCase().includes(value.toLowerCase())
+    );
+    const memberFiltered = memberProjects.filter((project) =>
+      project.title.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredChefProjects(chefFiltered);
+    setFilteredMemberProjects(memberFiltered);
   };
 
   const loadProjects = async () => {
     setIsLoadingProjects(true);
     try {
-      const response = await axiosClient.get("/projectsWithRole", {
-        headers: {
-          "X-CSRF-TOKEN": axiosClient.defaults.headers.common["X-CSRF-TOKEN"],
-        },
-      });
+      const response = await axiosClient.get("/projectsWithRole");
       const { chefProjects, memberProjects } = response.data;
       setChefProjects(chefProjects);
+      setFilteredChefProjects(chefProjects);
       setMemberProjects(memberProjects);
+      setFilteredMemberProjects(memberProjects);
       setLoadProjectsError(null); // Clear any previous errors
     } catch (error) {
       console.error("Error loading projects:", error);
@@ -180,13 +59,13 @@ const Projects = () => {
   };
 
   useEffect(() => {
-    const xsrfTokenMatch = document.cookie.match(/XSRF-TOKEN=(.+);/);
-    const csrfToken = xsrfTokenMatch ? xsrfTokenMatch[1] : null;
-    if (csrfToken) {
-      axiosClient.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
-      loadProjects();
-    }
+    loadProjects();
   }, []);
+
+  // Mettre à jour les projets du chef chaque fois que la liste change
+  useEffect(() => {
+    setFilteredChefProjects(chefProjects);
+  }, [chefProjects]);
 
   const deleteProject = async (projectId) => {
     if (
@@ -199,7 +78,21 @@ const Projects = () => {
           withCredentials: true,
         });
         toast.success("Project deleted successfully!");
-        loadProjects();
+        // Mettre à jour l'état local des projets après suppression
+        setChefProjects((prevChefProjects) =>
+          prevChefProjects.filter((project) => project.id !== projectId)
+        );
+        setMemberProjects((prevMemberProjects) =>
+          prevMemberProjects.filter((project) => project.id !== projectId)
+        );
+        setFilteredChefProjects((prevFilteredChefProjects) =>
+          prevFilteredChefProjects.filter((project) => project.id !== projectId)
+        );
+        setFilteredMemberProjects((prevFilteredMemberProjects) =>
+          prevFilteredMemberProjects.filter(
+            (project) => project.id !== projectId
+          )
+        );
       } catch (error) {
         toast.error("Error deleting project!");
         console.error(
@@ -211,7 +104,6 @@ const Projects = () => {
 
   return (
     <div className="w-full h-full pt-11 p-8 text-white">
-      {/* search bar */}
       <div className="fixed top-6 flex mt-2 items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
         <input
           type="text"
@@ -227,122 +119,114 @@ const Projects = () => {
         <div className="w-full mb-2">
           <div className="w-full mb-2">
             {loadProjectsError ? (
-              <p>{loadProjectsError}</p>
+              <p className="text-red-500">{loadProjectsError}</p>
             ) : isLoadingProjects ? (
               <p>Loading projects...</p>
             ) : (
               <>
-                <h3 className="text-gray-600 font-semibold mx-4 mb-2">
+                <h3 className="text-gray-600 text-xl dark:text-white font-bold mb-2">
                   Projects
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5 gap-5">
-                  {chefProjects
-                    .filter(
-                      (project) =>
-                        project.title
-                          .toLowerCase()
-                          .includes(searchValue.toLowerCase()) ||
-                        project.description
-                          .toLowerCase()
-                          .includes(searchValue.toLowerCase())
-                    )
-                    .map((project) => (
+                <div className="grid grid-cols-1 sm:grid-cols-1 mb-8 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5 gap-5">
+                  {!filteredChefProjects || !filteredChefProjects.length ? (
+                    <p className="ml-4">No projects found.</p>
+                  ) : (
+                    filteredChefProjects.map((project) => (
                       <div key={project.id} className="mb-4 w-72 h-300">
-                        <Link to={`/project/${project.id}`}>
-                          <div className="dark:bg-black relative dark:bg-opacity-30 bg-white bg-opacity-30 rounded-lg overflow-hidden h-60 shadow-md flex flex-col">
-                            <div className="p-4 flex-1 overflow-y-auto">
+                        <div className="dark:bg-black relative dark:bg-opacity-30 bg-white bg-opacity-30 rounded-lg overflow-hidden h-60 shadow-md flex flex-col">
+                          <div className="p-4 flex-1 overflow-y-auto">
+                            <button
+                              onClick={() => handleClick(project.id, project)}
+                            >
                               <h2
                                 className="font-semibold text-gray-800 dark:text-white mb-2"
                                 style={{ fontSize: "small" }}
                               >
                                 {project.title}
                               </h2>
+                            </button>
+                            <p
+                              className="text-gray-600 dark:text-gray-300 "
+                              style={{ fontSize: "small" }}
+                            >
+                              {project.description}
+                            </p>
+                            {project.deadline && (
                               <p
-                                className="text-gray-600 dark:text-gray-300 "
+                                className="text-gray-500 absolute bottom-4 flex items-end dark:text-gray-400 "
                                 style={{ fontSize: "small" }}
                               >
-                                {project.description}
+                                Deadline:{" "}
+                                {new Date(
+                                  project.deadline
+                                ).toLocaleDateString()}
                               </p>
-                              {project.deadline && (
-                                <p
-                                  className="text-gray-500 absolute bottom-4 flex items-end dark:text-gray-400 "
-                                  style={{ fontSize: "small" }}
-                                >
-                                  Deadline:{" "}
-                                  {new Date(
-                                    project.deadline
-                                  ).toLocaleDateString()}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex justify-end p-4">
-                              <button
-                                onClick={() => deleteProject(project.id)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                Supprimer
-                              </button>
-                            </div>
+                            )}
                           </div>
-                        </Link>
+                          <div className="flex justify-end p-4">
+                            <button
+                              onClick={() => deleteProject(project.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    ))}
+                    ))
+                  )}
                 </div>
-                <h3 className="text-gray-600 font-semibold mx-4 mb-2">
+                <h3 className="text-gray-600 text-xl dark:text-white font-semibold  mb-2">
                   Projects Invited
                 </h3>
-                <div className="grid grid-cols-1  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5 gap-5">
-                  {memberProjects
-                    .filter(
-                      (project) =>
-                        project.title
-                          .toLowerCase()
-                          .includes(searchValue.toLowerCase()) ||
-                        project.description
-                          .toLowerCase()
-                          .includes(searchValue.toLowerCase())
-                    )
-                    .map((project) => (
+                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xl:gap-5 gap-5">
+                  {!filteredMemberProjects || !filteredMemberProjects.length ? (
+                    <p className="ml-4">No projects found.</p>
+                  ) : (
+                    filteredMemberProjects.map((project) => (
                       <div key={project.id} className="mb-4 w-72 h-300">
-                        <Link to={`/project/${project.id}`}>
-                          <div className="dark:bg-black relative dark:bg-opacity-30 bg-white bg-opacity-30 rounded-lg overflow-hidden h-60 shadow-md flex flex-col">
-                            <div className="p-4 flex-1 overflow-y-auto">
+                        <div className="dark:bg-black relative dark:bg-opacity-30 bg-white bg-opacity-30 rounded-lg overflow-hidden h-60 shadow-md flex flex-col">
+                          <div className="p-4 flex-1 overflow-y-auto">
+                            <button
+                              onClick={() => handleClick(project.id, project)}
+                            >
                               <h2
                                 className="font-semibold text-gray-800 dark:text-white mb-2"
                                 style={{ fontSize: "small" }}
                               >
                                 {project.title}
                               </h2>
+                            </button>
+                            <p
+                              className="text-gray-600 dark:text-gray-300 "
+                              style={{ fontSize: "small" }}
+                            >
+                              {project.description}
+                            </p>
+                            {project.deadline && (
                               <p
-                                className="text-gray-600 dark:text-gray-300 "
+                                className="text-gray-500 absolute bottom-4 flex items-end dark:text-gray-400 "
                                 style={{ fontSize: "small" }}
                               >
-                                {project.description}
+                                Deadline:{" "}
+                                {new Date(
+                                  project.deadline
+                                ).toLocaleDateString()}
                               </p>
-                              {project.deadline && (
-                                <p
-                                  className="text-gray-500 absolute bottom-4 flex items-end dark:text-gray-400 "
-                                  style={{ fontSize: "small" }}
-                                >
-                                  Deadline:{" "}
-                                  {new Date(
-                                    project.deadline
-                                  ).toLocaleDateString()}
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex justify-end p-4">
-                              <button
-                                onClick={() => deleteProject(project.id)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                Supprimer
-                              </button>
-                            </div>
+                            )}
                           </div>
-                        </Link>
+                          <div className="flex justify-end p-4">
+                            <button
+                              onClick={() => deleteProject(project.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    ))}
+                    ))
+                  )}
                 </div>
               </>
             )}

@@ -2,38 +2,44 @@ import React, { useState } from "react";
 import axiosClient from "../axios-client.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import { useStateContext } from "../context/ContextProvider.jsx";
 
 function AddEditBoardModal({ setBoardModalOpen, type }) {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [deadline, setDeadline] = useState(null); // Utilisation de useState pour deadline
+  const [description, setDescription] = useState("");
+  const [deadlineError, setDeadlineError] = useState("");
+  const { setChefProjects } = useStateContext();
+
+  const [deadline, setDeadline] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axiosClient.post(`/projects`, {
-        title: title,
-        description: description,
-        deadline: deadline ? deadline.toISOString().split("T")[0] : null,
-      });
+    const today = new Date();
 
+    if (deadline && deadline < today) {
+      setDeadlineError("Deadline must be from today or later.");
+      return;
+    } else {
+      setDeadlineError("");
       try {
-        const notificationResponse = await axiosClient.post(`/notifications`, {
-          message: `New Project added : ${title}`,
+        const response = await axiosClient.post(`/projects`, {
+          title: title,
+          description: description,
+          deadline: deadline ? deadline.toISOString().split("T")[0] : null,
         });
-        toast.success("Project notification successfully!");
-      } catch (error) {
-        console.error("Error sending project notification:", error);
-        toast.error("Error sending project notification. Please try again.");
-      }
 
-      window.location.reload();
-      toast.success("Project created successfully!");
-    } catch (error) {
-      console.error("Error creating project:", error);
-      toast.error("Error creating project. Please try again.");
+        // Mise à jour de la liste des projets du chef avec le nouveau projet ajouté
+        setChefProjects((prevProjects) => [...prevProjects, response.data]);
+
+        // Fermer le modal après la création du projet
+        setBoardModalOpen(false);
+
+        toast.success("Project created successfully!");
+      } catch (error) {
+        console.error("Error creating project:", error);
+        toast.error("Error creating project. Please try again.");
+      }
     }
   };
 
@@ -61,17 +67,17 @@ function AddEditBoardModal({ setBoardModalOpen, type }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               name="title"
-              className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border  border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
+              className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
             />
             <label className="text-sm dark:text-white text-gray-500">
               Project Description
             </label>
             <input
               type="text"
-              value={description || ""}
+              value={description}
               onChange={(e) => setDescription(e.target.value)}
               name="description"
-              className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border  border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
+              className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
             />
           </div>
           <div className="mt-8 flex flex-col space-y-3">
@@ -81,14 +87,17 @@ function AddEditBoardModal({ setBoardModalOpen, type }) {
             <div className="flex items-center space-x-3">
               <DatePicker
                 selected={deadline}
-                onChange={(date) => setDeadline(date)} // Mise à jour de la variable deadline
+                onChange={(date) => setDeadline(date)}
                 className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
               />
             </div>
           </div>
           <div>
+            {deadlineError && (
+              <p className="text-sm text-red-500">{deadlineError}</p>
+            )}
             <button
-              className="w-full items-center  hover:opacity-75 dark:text-white mt-8 relative text-white bg-midnightblue py-2 rounded-full"
+              className="w-full items-center hover:opacity-75 dark:text-white mt-8 relative text-white bg-midnightblue py-2 rounded-full"
               type="submit"
             >
               {type === "add" ? "Create New Board" : "Save Changes"}

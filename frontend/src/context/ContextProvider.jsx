@@ -3,15 +3,19 @@ const StateContext = createContext({
   currentUser: null,
   token: null,
   notifications: [],
+  chefProjects: [],
   setUser: () => {},
   setToken: () => {},
   setNotifications: () => {},
+  setChefProjects: () => {},
 });
 
 export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
   const [notifications, setNotifications] = useState([]);
+  const [chefProjects, setChefProjects] = useState([]); // État initial des projets
+
   const setToken = (token) => {
     _setToken(token);
     if (token) {
@@ -29,6 +33,8 @@ export const ContextProvider = ({ children }) => {
         token,
         setToken,
         notifications,
+        chefProjects,
+        setChefProjects,
         setNotifications,
       }}
     >

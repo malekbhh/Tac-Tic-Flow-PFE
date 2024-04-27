@@ -9,15 +9,14 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'status', 'project_id', 'card_id'];
+    protected $fillable = ['title', 'description', 'status', 'project_id', 'user_id'];
 
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
-    public function taskMemberships()
+    public function user()
     {
-        return $this->hasMany(TaskMembership::class);
+        return $this->belongsTo(User::class);
     }
- 
 }

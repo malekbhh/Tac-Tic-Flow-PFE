@@ -7,9 +7,7 @@ function GuestLayout() {
   if (token) {
     return <Navigate to="/user" />;
   }
-  const onSubmit = (ev) => {
-    ev.preventDefault();
-  };
+
   return (
     <div
       className="w-full"

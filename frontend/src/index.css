@@ -3,6 +3,30 @@
 @tailwind utilities;
 
 
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-spinner {
+  border: 8px solid rgba(0, 0, 0, 0.1); /* Couleur de la bordure */
+  border-top: 8px solid #3498db; /* Couleur de la bordure supérieure */
+  border-radius: 50%; /* Forme du spinner */
+  width: 100px; /* Largeur du spinner */
+  margin-left: 50px;
+  height: 100px; /* Hauteur du spinner */
+  animation: spin 1s linear infinite; /* Animation de rotation */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); /* Début de la rotation */
+  }
+  100% {
+    transform: rotate(360deg); /* Fin de la rotation */
+  }
+}
 
 
 .progress-container {

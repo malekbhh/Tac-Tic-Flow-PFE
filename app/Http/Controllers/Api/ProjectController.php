@@ -12,109 +12,56 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-    public function index(Request $request)
+  
+    //Organisation code
+    public function store(Request $request)
     {
         $user = $request->user();
-        if (!$user->memberships->isEmpty()) {
-            // Récupérer les IDs des projets associés à cet utilisateur dans la table memberships
-            $projectIds = $user->memberships->pluck('project_id');
     
-            // Récupérer les projets correspondant aux IDs récupérés
-            $projects = Project::whereIn('id', $projectIds)->get();
+        // Valider les données envoyées dans la requête
+        $validatedData = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'deadline' => 'nullable|date', // Assurez-vous que la date est valide
+        ]);
     
-            return response()->json($projects);
-        } else {
-            // Aucune adhésion trouvée, renvoyer un message approprié
-            return response()->json(['message' => 'No projects found for this user'], 404);
+        // Créez un nouveau projet avec les données validées
+        try {
+            $project = new Project();
+            $project->title = $validatedData['title'];
+            $project->description = $validatedData['description'];
+            $project->user_id = $user->id;
+            $project->deadline = $validatedData['deadline']; // Assurez-vous que le nom du champ correspond à celui dans votre modèle Project
+            $project->save();
+        
+            Membership::create([
+                'user_id' => $user->id,
+                'project_id' => $project->id,
+                'user_role' => 'chef',
+            ]);
+            return response()->json($project, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to create project.'], 500);
         }
     }
+
     public function showProjectsWithRole(Request $request)
     {
         $user = $request->user();
-        $chefProjects = [];
-        $memberProjects = [];
     
-        if (!$user->memberships->isEmpty()) {
-            foreach ($user->memberships as $membership) {
-            if ($membership->user_role === 'chef') {
-                    // Récupérer les IDs des projets pour lesquels l'utilisateur est un chef
-                    $chefProjectsIds[] = $membership->project_id;
-                } else {
-                    // Récupérer les IDs des projets pour lesquels l'utilisateur est un membre
-                    $memberProjectsIds[] = $membership->project_id;
-                }
-            }
+        // Récupérer tous les projets du chef pour l'utilisateur authentifié
+        $chefProjects = $user->projects()->wherePivot('user_role', 'chef')->get();
     
+        // Récupérer tous les projets des membres pour l'utilisateur authentifié
+        $memberProjects = $user->projects()->wherePivot('user_role', '!=', 'chef')->get();
     
-            // Récupérer les projets pour lesquels l'utilisateur est un chef
-            if (!empty($chefProjectsIds)) {
-                $chefProjects = Project::whereIn('id', $chefProjectsIds)->get();
-            }
-    
-            // Récupérer les projets pour lesquels l'utilisateur est un membre
-            if (!empty($memberProjectsIds)) {
-                $memberProjects = Project::whereIn('id', $memberProjectsIds)->get();
-            }
-    
-            // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
-            return response()->json([
-                'chefProjects' => $chefProjects,
-                'memberProjects' => $memberProjects
-            ]);
-        } else {
-            // Aucune adhésion trouvée, renvoyer un message approprié
-            return response()->json(['message' => 'No projects found for this user'], 404);
-        }
-    }
-   
-    public function store(Request $request)
-{
-    $user = $request->user();
-
-    // Valider les données envoyées dans la requête
-    $validatedData = $request->validate([
-        'title' => 'required|string',
-        'description' => 'required|string',
-        'deadline' => 'nullable|date', // Assurez-vous que la date est valide
-    ]);
-
-    // Créez un nouveau projet avec les données validées
-    try {
-        $project = new Project();
-        $project->title = $validatedData['title'];
-        $project->description = $validatedData['description'];
-        $project->user_id = $user->id;
-        $project->deadline = $validatedData['deadline']; // Assurez-vous que le nom du champ correspond à celui dans votre modèle Project
-        $project->save();
-    
-        Membership::create([
-            'user_id' => $user->id,
-            'project_id' => $project->id,
-            'user_role' => 'chef',
+        // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
+        return response()->json([
+            'chefProjects' => $chefProjects,
+            'memberProjects' => $memberProjects
         ]);
-        return response()->json($project, 201);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Failed to create project.'], 500);
     }
-}
-
-    public function update(Request $request, Project $project)
-    {
-        $user = Auth::user();
-
-        if ($project->user_id !== $user->id) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
-
-        $project->update($validatedData);
-
-        return response()->json($project);
-    }
+    
 
     public function destroy(Project $project)
     {
@@ -129,53 +76,59 @@ class ProjectController extends Controller
         // Répondre avec un statut de succès
         return response()->json(['message' => 'Projet supprimé avec succès']);
     }
-    public function showProject(Request $request, $idOrProject)
+
+    public function showMembers($projectId)
     {
-        $user = Auth::user();
-    
-        if ($idOrProject instanceof Project) {
-            $project = $idOrProject;
-        } else {
-            $project = Project::where('title', $idOrProject)->first();
-        }
-    
-        if (!$project) {
+        try {
+            // Récupérer le projet avec ses membres
+            $project = Project::with('users')->findOrFail($projectId);
+            
+            // Collecter les détails des membres avec leurs avatars, en excluant l'utilisateur authentifié
+            $members = [];
+            foreach ($project->users as $user) {
+                if ($user->id !== auth()->id()) { // Exclure l'utilisateur authentifié
+                    $avatarUrl = $user->avatar ? asset('storage/avatars/' . $user->avatar) : null;
+                    $members[] = [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'avatar' => $avatarUrl,
+                    ];
+                }
+            }
+            
+            // Retourner les membres du projet avec leurs avatars
+            return response()->json(['members' => $members], 200);
+        } catch (\Exception $e) {
+            // Gérer l'erreur si le projet n'est pas trouvé
             return response()->json(['error' => 'Project not found'], 404);
         }
+    }
     
-        if ($project->user_id !== $user->id) {
-            return response()->json(['error' => 'Forbidden'], 403);
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        
+        // Vérifier si l'utilisateur est authentifié
+        if ($user) {
+            // Récupérer les projets associés à cet utilisateur dans la table memberships
+            $projects = Project::join('memberships', 'projects.id', '=', 'memberships.project_id')
+                ->where('memberships.user_id', $user->id)
+                ->get(['projects.*']);
+    
+            if ($projects->isNotEmpty()) {
+                // Des projets sont associés à cet utilisateur
+                return response()->json($projects);
+            } else {
+                // Aucun projet trouvé pour cet utilisateur
+                return response()->json(['message' => 'No projects found for this user'], 404);
+            }
+        } else {
+            // Utilisateur non authentifié
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
-    
-        return response()->json($project);
     }
  
-    public function show($projectId)
-    {
-        $project = Project::findOrFail($projectId);
-        return response()->json($project);
-    }
-    public function addTask(Request $request, Project $project)
-    {
-        $user = Auth::user();
+  
 
-        // Vérifiez si l'utilisateur est authentifié
-        if (!$user) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
-    
-        // Vérifiez si l'utilisateur a le droit d'ajouter une tâche à ce projet
-        if ($project->user_id !== $user->id) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-    
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
-    
-        // Ajoutez la tâche au projet
-        $task = $project->tasks()->create($validatedData);
-    
-        return response()->json($task, 201);
-    }
 }

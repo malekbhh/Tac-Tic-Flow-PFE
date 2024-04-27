@@ -122,17 +122,21 @@ function Login() {
             onSubmit={onSubmit}
           >
             <input
-              className="shadow-md shadow-slate-600 bg-transparent  rounded-xl  px-4 py-3 mt-2  border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500  w-80"
+              className="shadow-md shadow-slate-600 bg-transparent rounded-xl px-4 py-3 mt-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-80"
               placeholder="Enter your email"
               ref={emailRef}
               type="email"
+              autocomplete="username"
             />
+
             <input
-              className="shadow-md shadow-slate-600 bg-transparent  rounded-xl  px-4 py-3 mt-2  border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500  w-80"
+              className="shadow-md shadow-slate-600 bg-transparent rounded-xl px-4 py-3 mt-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-80"
               placeholder="Password"
               ref={passwordRef}
               type="password"
+              autocomplete="current-password"
             />
+
             <p className="text-sm text-center -mt-1 text-gray-400">
               Forgot your password?{" "}
               <Link

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Avatar, Divider, List, Skeleton, Badge } from "antd";
+import { Avatar, Divider, List, Skeleton } from "antd";
 import axiosClient from "../../axios-client";
 import { Link } from "react-router-dom";
 import { UserOutlined } from "@ant-design/icons"; // Import de l'icône utilisateur
@@ -8,7 +8,6 @@ import { UserOutlined } from "@ant-design/icons"; // Import de l'icône utilisat
 const ChatUser = ({ user, onUserSelect }) => {
   const [total, setTotal] = useState(100);
   const [loading, setLoading] = useState(false);
-  const [nextPageUrl, setNextPageUrl] = useState("/chat-users");
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -115,11 +114,7 @@ const ChatUser = ({ user, onUserSelect }) => {
                           {item?.name}
                         </span>
                       }
-                      // description={
-                      //   <small className="dark:text-gray-300">Online</small>
-                      // }
                     />
-                    {/* <Badge count={Math.floor(Math.random() * 5)} /> */}
                   </List.Item>
                 </Link>
               </div>

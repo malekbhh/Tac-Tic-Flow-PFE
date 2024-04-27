@@ -20,9 +20,9 @@ return [
         'name' => env('MAIL_FROM_NAME', config('app.name')),
     ],
 
-    'to' => [
-        'address' => env('MAIL_TO_ADDRESS', 'malekbhh01@gmail.com'),
-        'name' => env('MAIL_TO_NAME', 'Recipient'),
-    ],
+    // 'to' => [
+    //     'address' => env('MAIL_TO_ADDRESS', 'malekbhh01@gmail.com'),
+    //     'name' => env('MAIL_TO_NAME', 'Recipient'),
+    // ],
 
 ];

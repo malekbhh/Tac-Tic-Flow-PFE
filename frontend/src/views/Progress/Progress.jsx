@@ -15,11 +15,7 @@ function Progress() {
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        const response = await axiosClient.get("/projects", {
-          headers: {
-            "X-CSRF-TOKEN": axiosClient.defaults.headers.common["X-CSRF-TOKEN"],
-          },
-        });
+        const response = await axiosClient.get("/projects");
         setProjects(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -28,12 +24,7 @@ function Progress() {
       }
     };
 
-    const xsrfTokenMatch = document.cookie.match(/XSRF-TOKEN=(.+);/);
-    const csrfToken = xsrfTokenMatch ? xsrfTokenMatch[1] : null;
-    if (csrfToken) {
-      axiosClient.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
-      loadProjects();
-    }
+    loadProjects();
   }, []);
 
   const handleProjectClick = async (projectId) => {
