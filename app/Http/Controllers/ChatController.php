@@ -71,4 +71,6 @@ class ChatController extends Controller
         // Retourner une réponse JSON
         return response()->json(['message' => $message]);
     }
+
+
 }    

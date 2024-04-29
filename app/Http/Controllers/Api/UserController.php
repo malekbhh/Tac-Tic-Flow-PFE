@@ -7,6 +7,8 @@ use App\Mail\MailNotify;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Mail;
+use App\Models\Task;
+
 use App\Models\Membership;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -222,5 +224,28 @@ class UserController extends Controller
     // Retourner les données de l'utilisateur
     return response()->json($userData);
  }
+ public function getUserByTaskId($taskId)
+{
+    try {
+        // Récupérer la tâche par son ID
+        $task = Task::find($taskId);
 
+        // Vérifier si la tâche existe
+        if (!$task) {
+            return response()->json(['error' => 'Tâche non trouvée'], 404);
+        }
+
+        // Récupérer l'ID de l'utilisateur associé à la tâche
+        $userId = $task->user_id;
+
+        // Utiliser la fonction getUserById pour récupérer les données de l'utilisateur
+        $userData = $this->getUserById($userId);
+
+        // Retourner les données de l'utilisateur
+        return $userData;
+    } catch (\Exception $e) {
+        // Gérer les erreurs
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
 }

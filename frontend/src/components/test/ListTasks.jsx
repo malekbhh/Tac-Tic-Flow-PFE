@@ -5,6 +5,7 @@ import axiosClient from "../../axios-client";
 import bin from "./bin.png";
 import edittask from "./edittask.png";
 import CreateTask from "./CreateTask";
+
 function ListTasks({ projectId, tasks, setTasks, isChef }) {
   const handleEditTask = (task) => {
     setSelectedTask(task);
@@ -69,6 +70,7 @@ const Section = ({
     try {
       const response = await axiosClient.get(`/projects/${projectId}/tasks`);
       setTasks(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
@@ -194,7 +196,7 @@ const Header = ({ text, bg, count }) => {
     </div>
   );
 };
-const Task = ({ task, tasks, setEditTask, setTasks, isChef }) => {
+const Task = ({ task, setTasks, isChef }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
@@ -202,51 +204,78 @@ const Task = ({ task, tasks, setEditTask, setTasks, isChef }) => {
       isDragging: !!monitor.isDragging(),
     }),
   }));
-  console.log(isDragging);
+  const [userAvatar, setUserAvatar] = useState(null);
 
-  const handleremove = async (id) => {
+  useEffect(() => {
+    const fetchUserAvatar = async () => {
+      try {
+        const response = await axiosClient.get(`/users/${task.id}/avatar`);
+        setUserAvatar(response.data.avatar);
+      } catch (error) {
+        console.error("Error fetching user avatar:", error);
+      }
+    };
+
+    fetchUserAvatar();
+  }, [task.id]);
+
+  const handleRemove = async () => {
     try {
-      // Envoyer une requête DELETE pour supprimer la tâche du backend
-      await axiosClient.delete(`/tasks/${id}`);
-
-      // Mettre à jour l'état local des tâches après la suppression réussie
-      const fTasks = tasks.filter((t) => t.id !== id);
-      localStorage.setItem("tasks", JSON.stringify(fTasks));
-      setTasks(fTasks);
-      toast("Task removed", { icon: "👽" });
+      await axiosClient.delete(`/tasks/${task.id}`);
+      // Mettre à jour localement la liste des tâches après suppression
+      setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
+      toast.success("Task removed successfully");
     } catch (error) {
       console.error("Error removing task:", error);
       toast.error("Error removing task. Please try again.");
     }
   };
+
   return (
     <div
       ref={drag}
-      className={`relative p-4  bg-white  dark:bg-gray-900 shadow-md dark:shadow-gray-950 dark:shadow-sm rounded-md cursor-grab ${
-        isDragging ? "opacity-25" : " opacity-100"
+      className={`relative p-4 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-950 dark:shadow-sm rounded-md cursor-grab ${
+        isDragging ? "opacity-25" : "opacity-100"
       }`}
     >
-      <p className="text-black dark:text-white " style={{ fontSize: "small" }}>
+      <p className="text-black dark:text-white" style={{ fontSize: "small" }}>
         {task.title}
       </p>
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {task.due_date}
-      </p>{" "}
+      </p>
       {isChef && (
-        <button
-          className="absolute top-1 right-1 text-slate-400 "
-          onClick={() => setEditTask(true)}
-        >
-          <img className="h-4 m-2" src={edittask} alt="icon" />
-        </button>
-      )}
-      {isChef && (
-        <button
-          className="absolute bottom-1 right-1 text-slate-400 "
-          onClick={() => handleremove(task.id)}
-        >
-          <img className="h-4 m-2" src={bin} alt="icon" />
-        </button>
+        <>
+          <button
+            className="absolute top-1 right-1 text-slate-400"
+            onClick={() => handleEditTask(true)}
+          >
+            <img className="h-4 m-2" src={edittask} alt="Edit Task" />
+          </button>
+          <button
+            className="absolute bottom-1 right-1 text-slate-400 "
+            onClick={handleRemove}
+          >
+            <img className="h-4 m-2" src={bin} alt="icon" />
+          </button>
+          {userAvatar ? (
+            <div className="absolute right-8 bottom-2 text-slate-400">
+              <img
+                className="w-5 h-5 rounded-full"
+                src={userAvatar}
+                alt="user avatar"
+              />
+            </div>
+          ) : (
+            <div className="absolute right-8 bottom-2  text-slate-400">
+              <img
+                className="w-5 h-5 rounded-full"
+                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                alt="default user avatar"
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

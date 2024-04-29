@@ -59,7 +59,7 @@ class TaskController extends Controller
      
     public function getTasksByProjectId($projectId)
     {
-     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status']); // Ajoutez 'due_date' à la sélection
+     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status','user_id']); // Ajoutez 'due_date' à la sélection
      return response()->json($tasks);
     }
        
@@ -135,5 +135,28 @@ class TaskController extends Controller
           return response()->json(['error' => 'Failed to retrieve tasks by project ID.'], 500);
       }
     }
+
+    public function getTasksByProjectAndMember($projectId, $memberId)
+    {
+        try {
+            // Récupérer les tâches du membre spécifié dans le projet spécifié
+            $tasks = Task::where('project_id', $projectId)
+                         ->where('user_id', $memberId)
+                         ->get();
+    
+            return response()->json($tasks);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve tasks by project and member ID.'], 500);
+        }
+    }
+
+
+    
   
 }    
+
+
+
+
+
+   

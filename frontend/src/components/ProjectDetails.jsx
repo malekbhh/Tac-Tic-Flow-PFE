@@ -35,6 +35,7 @@ const ProjectDetails = () => {
           `/projects/${projectId}/tasks`
         );
         setTasks(tasksResponse.data);
+        console.log(tasksResponse.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }

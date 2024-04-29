@@ -42,9 +42,15 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::post('/tasks/{taskId}/status', [TaskController::class, 'updateTaskStatus']);
    Route::post('/tasks/{taskId}/check-can-drop', [TaskController::class,'canDropTask']);
    Route::post('/user/avatar', [UserController::class, 'updatePhoto']);
+   Route::get('/users/{taskId}/avatar', [UserController::class, 'getUserByTaskId']);
   //pour progress
    Route::get('/projects', [ProjectController::class, 'index']);
    Route::get('/tasks/project/{projectId}', [TaskController::class, 'getTasksByProjectUserId']);
+   Route::get('/memberships/{projectId}', [MembershipController::class, 'getProjectMembers']);
+   Route::get('/tasks/project/{projectId}/member/{memberId}', [TaskController::class, 'getTasksByProjectAndMember']);
+
+   Route::post('/check-user-role', [MembershipController::class, 'checkUserRoleForProject']);
+
   //pour user 
   Route::get('/usersAccount', [UserController::class, 'indexUsers']);
   Route::post('/usersAccount', [UserController::class, 'storee']);
