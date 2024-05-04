@@ -20,6 +20,8 @@ class TaskController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'dueDate' => 'nullable|date',
+            'priority' => 'required|string|in:low,medium,high', // Add validation for priority
+
         ]);
  
         if ($validator->fails()) {
@@ -32,6 +34,8 @@ class TaskController extends Controller
             $task->title = $request->title;
             $task->project_id = $projectId;
             $task->status = 'To Do';
+            $task->priority = $request->priority; // Set priority
+
             $task->due_date = $request->dueDate;
             $task->save();
  
@@ -59,7 +63,7 @@ class TaskController extends Controller
      
     public function getTasksByProjectId($projectId)
     {
-     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status','user_id']); // Ajoutez 'due_date' à la sélection
+     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status','user_id','priority']); // Ajoutez 'due_date' à la sélection
      return response()->json($tasks);
     }
        
@@ -93,11 +97,11 @@ class TaskController extends Controller
                 return response()->json(['canDrop' => false], 403);
             }
         } catch (\Exception $e) {
-            // Erreur lors de la recherche de la tâche ou de la récupération de l'utilisateur
-            return response()->json(['error' => 'Failed to check task permissions'], 500);
+            // Gérer les autres erreurs
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+      
 
     public function updateTaskStatus(Request $request, $taskId)
     {
@@ -155,8 +159,3 @@ class TaskController extends Controller
   
 }    
 
-
-
-
-
-   

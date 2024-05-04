@@ -6,7 +6,14 @@ import bin from "./bin.png";
 import edittask from "./edittask.png";
 import CreateTask from "./CreateTask";
 
-function ListTasks({ projectId, tasks, setTasks, isChef }) {
+function ListTasks({
+  projectId,
+  tasks,
+  setTasks,
+  isChef,
+  searchValue,
+  project,
+}) {
   const handleEditTask = (task) => {
     setSelectedTask(task);
   };
@@ -39,6 +46,7 @@ function ListTasks({ projectId, tasks, setTasks, isChef }) {
           status={status}
           tasks={tasks}
           setTasks={setTasks}
+          project={project}
           todos={todos}
           doings={doings}
           dones={dones}
@@ -47,6 +55,7 @@ function ListTasks({ projectId, tasks, setTasks, isChef }) {
           projectId={projectId}
           isChef={isChef}
           onEditTask={handleEditTask}
+          searchValue={searchValue}
         />
       ))}
     </div>
@@ -59,6 +68,8 @@ const Section = ({
   tasks,
   setTasks,
   todos,
+  searchValue,
+  project,
   doings,
   dones,
   closeds,
@@ -151,7 +162,7 @@ const Section = ({
   return (
     <div
       ref={drop}
-      className={` bg-white w-60 min-h-40 h-fit flex flex-col justify-between  gap-4  dark:bg-black dark:bg-opacity-30 rounded-lg p-2 ${
+      className={` bg-white w-80 min-h-40 h-fit flex flex-col justify-between  gap-4  dark:bg-black dark:bg-opacity-30 rounded-lg p-2 ${
         isOver ? "bg-opacity-30" : "bg-opacity-70"
       }`}
     >
@@ -169,6 +180,7 @@ const Section = ({
               isChef={isChef}
               key={task.id}
               task={task}
+              searchValue={searchValue}
               tasks={tasks}
               setTasks={setTasks}
               setEditTask={setEditTask}
@@ -177,7 +189,11 @@ const Section = ({
       </div>
       {tasksToMap === todos && isChef && (
         <div className="flex  w-full justify-center items-center  ">
-          <CreateTask projectId={projectId} setTasks={setTasks} />
+          <CreateTask
+            projectId={projectId}
+            project={project}
+            setTasks={setTasks}
+          />
         </div>
       )}
     </div>
@@ -196,7 +212,7 @@ const Header = ({ text, bg, count }) => {
     </div>
   );
 };
-const Task = ({ task, setTasks, isChef }) => {
+const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
@@ -212,12 +228,23 @@ const Task = ({ task, setTasks, isChef }) => {
         const response = await axiosClient.get(`/users/${task.id}/avatar`);
         setUserAvatar(response.data.avatar);
       } catch (error) {
-        console.error("Error fetching user avatar:", error);
+        if (error.response && error.response.status === 404) {
+          // L'avatar n'a pas été trouvé, nous laissons userAvatar à null
+          setUserAvatar(null);
+        } else {
+          console.error("Error fetching user avatar:", error);
+        }
       }
     };
 
-    fetchUserAvatar();
-  }, [task.id]);
+    // Vérifier si la tâche existe avant de récupérer l'avatar
+    if (tasks.find((t) => t.id === task.id)) {
+      fetchUserAvatar();
+    } else {
+      // Si la tâche n'existe pas, définir l'avatar sur null
+      setUserAvatar(null);
+    }
+  }, [task.id, tasks]);
 
   const handleRemove = async () => {
     try {
@@ -231,20 +258,47 @@ const Task = ({ task, setTasks, isChef }) => {
     }
   };
 
+  function getColorBasedOnPriority(priority) {
+    switch (priority) {
+      case "low":
+        return "bg-green-400"; // Green for low priority
+      case "medium":
+        return "bg-orange"; // Pink for medium priority
+      case "high":
+        return "bg-red-500"; // Orange for high priority
+      default:
+        return "bg-gray-400"; // Default color if priority is not defined
+    }
+  }
+  const isSearched =
+    searchValue.trim() !== "" &&
+    task.title.trim().toLowerCase().includes(searchValue.toLowerCase());
+
   return (
     <div
       ref={drag}
-      className={`relative p-4 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-950 dark:shadow-sm rounded-md cursor-grab ${
+      className={`relative  p-4 bg-white dark:bg-gray-900 dark:bg-opacity-70 shadow-md dark:shadow-gray-950 dark:shadow-sm rounded-md cursor-grab ${
         isDragging ? "opacity-25" : "opacity-100"
+      } ${
+        isSearched
+          ? "   border-2 border-blue-500     dark:border-blue-500 dark:shadow-2xl dark:shadow-blue-500  "
+          : ""
       }`}
     >
+      <div
+        className={`w-20 h-1 rounded-full 
+      ${getColorBasedOnPriority(task.priority)}
+      `}
+      >
+        {" "}
+      </div>
       <p className="text-black dark:text-white" style={{ fontSize: "small" }}>
         {task.title}
       </p>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm mb-3 text-gray-500 dark:text-gray-400">
         {task.due_date}
       </p>
-      {isChef && (
+      {isChef ? (
         <>
           <button
             className="absolute top-1 right-1 text-slate-400"
@@ -253,12 +307,12 @@ const Task = ({ task, setTasks, isChef }) => {
             <img className="h-4 m-2" src={edittask} alt="Edit Task" />
           </button>
           <button
-            className="absolute bottom-1 right-1 text-slate-400 "
+            className="absolute bottom-[2px] right-1 text-slate-400 "
             onClick={handleRemove}
           >
             <img className="h-4 m-2" src={bin} alt="icon" />
           </button>
-          {userAvatar ? (
+          {userAvatar && (
             <div className="absolute right-8 bottom-2 text-slate-400">
               <img
                 className="w-5 h-5 rounded-full"
@@ -266,16 +320,18 @@ const Task = ({ task, setTasks, isChef }) => {
                 alt="user avatar"
               />
             </div>
-          ) : (
-            <div className="absolute right-8 bottom-2  text-slate-400">
-              <img
-                className="w-5 h-5 rounded-full"
-                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                alt="default user avatar"
-              />
-            </div>
           )}
         </>
+      ) : (
+        userAvatar && (
+          <div className="absolute right-3 bottom-2 text-slate-400">
+            <img
+              className="w-5 h-5 rounded-full"
+              src={userAvatar}
+              alt="user avatar"
+            />
+          </div>
+        )
       )}
     </div>
   );

@@ -1,9 +1,12 @@
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
+
 const StateContext = createContext({
   currentUser: null,
   token: null,
   notifications: [],
   chefProjects: [],
+  unreadNotifications: 0,
+  setUnreadNotifications: () => {},
   setUser: () => {},
   setToken: () => {},
   setNotifications: () => {},
@@ -12,9 +15,11 @@ const StateContext = createContext({
 
 export const ContextProvider = ({ children }) => {
   const [user, setUser] = useState({});
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
   const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
   const [notifications, setNotifications] = useState([]);
-  const [chefProjects, setChefProjects] = useState([]); // État initial des projets
+  const [chefProjects, setChefProjects] = useState([]);
 
   const setToken = (token) => {
     _setToken(token);
@@ -36,6 +41,8 @@ export const ContextProvider = ({ children }) => {
         chefProjects,
         setChefProjects,
         setNotifications,
+        unreadNotifications,
+        setUnreadNotifications,
       }}
     >
       {children}

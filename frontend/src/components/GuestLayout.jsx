@@ -5,7 +5,7 @@ function GuestLayout() {
   const { user, token } = useStateContext();
 
   if (token) {
-    return <Navigate to="/user" />;
+    return <Navigate to="/projects" />;
   }
 
   return (

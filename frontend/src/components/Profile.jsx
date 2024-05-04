@@ -101,7 +101,7 @@ function Profile() {
   };
 
   return (
-    <div className="px-4 h-screen  py-2">
+    <div className=" ml-20 pt-20  py-2">
       <form
         onSubmit={handleFormSubmit}
         className="profile-form w-96 rounded-lg shadow-md overflow-hidden"

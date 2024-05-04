@@ -8,11 +8,41 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator; 
 use App\Models\Membership;
+use App\Models\User;
+
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
   
+    public function getProjectChefAvatar($projectId)
+    {
+        try {
+            // Rechercher l'ID de l'utilisateur (chef) associé au projet avec le rôle de chef
+            $chefId = Membership::where('project_id', $projectId)
+                ->where('user_role', 'chef')
+                ->value('user_id');
+    
+            // Vérifier si l'ID du chef a été trouvé
+            if (!$chefId) {
+                return response()->json(['error' => 'Chef not found for this project'], 404);
+            }
+    
+            // Trouver l'utilisateur (chef) du projet par son ID
+            $chef = User::findOrFail($chefId);
+    
+            // Construire l'URL de l'avatar du chef
+            $avatarUrl = $chef->avatar ? asset('storage/avatars/' . $chef->avatar) : null;
+    
+            // Renvoyer l'URL de l'avatar du chef
+            return response()->json(['avatar' => $avatarUrl]);
+        } catch (\Exception $e) {
+            // Gérer les erreurs
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
+    }
+    
+    
     //Organisation code
     public function store(Request $request)
     {
@@ -45,22 +75,48 @@ class ProjectController extends Controller
         }
     }
 
+    // public function showProjectsWithRole(Request $request)
+    // {
+    //     $user = $request->user();
+    
+    //     // Récupérer tous les projets du chef pour l'utilisateur authentifié
+    //     $chefProjects = $user->projects()->wherePivot('user_role', 'chef')->get();
+    
+    //     // Récupérer tous les projets des membres pour l'utilisateur authentifié
+    //     $memberProjects = $user->projects()->wherePivot('user_role', '!=', 'chef')->get();
+    
+    //     // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
+    //     return response()->json([
+    //         'chefProjects' => $chefProjects,
+    //         'memberProjects' => $memberProjects
+    //     ]);
+    // }
+
     public function showProjectsWithRole(Request $request)
-    {
-        $user = $request->user();
-    
-        // Récupérer tous les projets du chef pour l'utilisateur authentifié
-        $chefProjects = $user->projects()->wherePivot('user_role', 'chef')->get();
-    
-        // Récupérer tous les projets des membres pour l'utilisateur authentifié
-        $memberProjects = $user->projects()->wherePivot('user_role', '!=', 'chef')->get();
-    
-        // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
-        return response()->json([
-            'chefProjects' => $chefProjects,
-            'memberProjects' => $memberProjects
-        ]);
+{
+    $user = $request->user();
+
+    // Récupérer tous les projets du chef pour l'utilisateur authentifié
+    $chefProjects = $user->projects()->wherePivot('user_role', 'chef')->get();
+
+    // Récupérer tous les projets des membres pour l'utilisateur authentifié
+    $memberProjects = $user->projects()->wherePivot('user_role', '!=', 'chef')->get();
+
+    // Ajouter les informations sur l'avatar et le nom du chef pour chaque projet membre
+    foreach ($memberProjects as $project) {
+        $chef = $project->users()->wherePivot('user_role', 'chef')->first();
+        $project->chef_avatar = $chef->avatar ? asset('storage/avatars/' . $chef->avatar) : null;
+        $project->chef_name = $chef->name;
     }
+
+    // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
+    return response()->json([
+        'chefProjects' => $chefProjects,
+        'memberProjects' => $memberProjects
+    ]);
+}
+
+
     
 
     public function destroy(Project $project)

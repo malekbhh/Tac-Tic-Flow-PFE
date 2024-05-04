@@ -1,27 +1,33 @@
-import React, { useContext, useState, useEffect } from "react";
-import { useStateContext } from "../../context/ContextProvider";
+// NotificationDialog.jsx
+import React from "react";
+import NotificationComponent from "./NotificationComponent";
 import axiosClient from "../../axios-client";
-
+import { useEffect } from "react";
+import { useStateContext } from "../../context/ContextProvider";
 const NotificationDialog = ({ isOpen, onClose }) => {
-  const { user } = useStateContext();
-  const [notifications, setNotifications] = useState([]);
+  const { setUser, setUnreadNotifications } = useStateContext(); // Modifiez cette ligne
 
-  // Fetch notifications when the component mounts and user changes
+  const updateUnreadNotifications = async () => {
+    try {
+      await axiosClient.post("/notifications/update-unread", {
+        unreadNotifications: 0,
+      });
+      // Mettre à jour l'état de l'utilisateur pour refléter le changement
+      setUser((prevUser) => ({
+        ...prevUser,
+        unreadNotifications: 0,
+      }));
+      setUnreadNotifications(0);
+    } catch (error) {
+      console.error("Error updating unread notifications:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchNotifications = async () => {
-      if (!user) return;
-
-      try {
-        const response = await axiosClient.get(`/notifications/${user.id}`);
-        setNotifications(response.data.notifications.reverse()); // Inverser l'ordre des notifications
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
-
-    fetchNotifications();
-  }, [user]); // Ajout de user comme dépendance pour recharger les notifications lorsque l'utilisateur change
-
+    if (isOpen) {
+      updateUnreadNotifications();
+    }
+  }, [isOpen]);
   return (
     <div
       className={`${
@@ -46,66 +52,7 @@ const NotificationDialog = ({ isOpen, onClose }) => {
           aria-modal="true"
           aria-labelledby="modal-headline"
         >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Notifications
-            </h3>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 focus:outline-none"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {notifications.length === 0 && (
-            <div className="text-center text-gray-500  font-medium">
-              You don't have any new notifications yet.
-            </div>
-          )}
-
-          <ul
-            className="space-y-4 overflow-y-scroll"
-            style={{ maxHeight: "228px" }}
-          >
-            {notifications.map((notification, index) => (
-              <li
-                key={index}
-                className="flex items-center p-4 rounded-md border border-gray-200 hover:bg-gray-100"
-              >
-                {notification.icon && (
-                  <span className="mr-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-400">
-                    {notification.icon}
-                  </span>
-                )}
-                <div className="flex-grow">{notification.notification}</div>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-5 sm:mt-6">
-            <button
-              type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-midnightblue text-base font-medium text-white hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-midnightblue sm:text-sm"
-              onClick={onClose}
-            >
-              Close
-            </button>
-          </div>
+          <NotificationComponent />
         </div>
       </div>
     </div>

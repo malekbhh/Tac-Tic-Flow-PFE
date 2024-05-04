@@ -12,36 +12,34 @@ function Home() {
       {" "}
       <NavbarHome className="shadow-md bg-white" />
       <div className="flex   flex-col md:flex-row justify-around items-center">
-        <section class="">
-          <div class="text-start flex flex-col items-start justify-center py-20 md:py-40">
-            <h1 class="text-5xl font-bold leading-tight text-start text-white">
+        <section>
+          <div className="text-start flex flex-col items-start justify-center py-20 md:py-40">
+            <h1 className="text-5xl font-bold leading-tight text-start text-white">
               Empower Your Projects
             </h1>
-            <p class="text-3xl font-medium mt-4 text-start text-white">
-              with <span class="text-5xl font-bold text-white">TacticFlow</span>
+            <p className="text-3xl font-medium mt-4 text-start text-white">
+              with{" "}
+              <span className="text-5xl font-bold text-white">TacticFlow</span>
             </p>
-            <p class="text-xl mt-4 text-start text-gray-300">
+            <p className="text-xl mt-4 text-start text-gray-300">
               Organize, collaborate, and track your projects with ease.
             </p>
-            <div class="flex justify-center mt-8">
-              <div class="flex flex-row">
+            <div className="flex justify-center mt-8">
+              <div className="flex flex-row">
                 <input
                   type="email"
-                  class="border border-gray-300 rounded-3xl pr-11 px-3 py-2 mr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+                  className="border border-gray-300 text-xl rounded-3xl pr-11 px-3 py-2 mr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
                   placeholder="Enter your email"
                   required
                 />
                 <button
                   type="button"
-                  class="text-center text-white bg-gradient-to-r from-indigo-500 to-indigo-700
-      hover:from-indigo-600 hover:to-indigo-800
-      hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
-      font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out animate-pulse
-        transform
- hover:scale-105"
+                  className="text-center text-white bg-gradient-to-r text-xl from-indigo-500 to-indigo-700
+ hover:from-indigo-600 hover:to-indigo-800 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+  font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out animate-pulse transform hover:scale-105"
                 >
                   Verifiy Account existe or no
-                  <i class="fa fa-user-plus" aria-hidden="true"></i>
+                  <i className="fa fa-user-plus" aria-hidden="true"></i>
                 </button>
               </div>
             </div>

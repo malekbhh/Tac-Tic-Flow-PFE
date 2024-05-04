@@ -71,10 +71,10 @@ function Login() {
 
         const userrole = data.user.role;
         if (userrole === "admin") {
-          navigate("/userAdmin"); // Correction ici
+          navigate("/projects"); // Correction ici
         } else {
           console.log("trueeeee");
-          navigate("/user"); // Correction ici
+          navigate("/projects"); // Correction ici
         }
       })
       .catch((err) => {
@@ -85,7 +85,7 @@ function Login() {
       });
   };
   if (redirect) {
-    return <Navigate to="/user" />;
+    return <Navigate to="/projects" />;
   }
 
   return (
@@ -126,7 +126,7 @@ function Login() {
               placeholder="Enter your email"
               ref={emailRef}
               type="email"
-              autocomplete="username"
+              autoComplete="username"
             />
 
             <input
@@ -134,7 +134,7 @@ function Login() {
               placeholder="Password"
               ref={passwordRef}
               type="password"
-              autocomplete="current-password"
+              autoComplete="current-password"
             />
 
             <p className="text-sm text-center -mt-1 text-gray-400">

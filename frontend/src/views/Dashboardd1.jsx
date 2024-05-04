@@ -5,7 +5,6 @@ import axiosClient from "../axios-client.js";
 import { useEffect } from "react";
 import AddEditBoardModal from "../modals/AddEditBoardModal.jsx";
 import HeaderDropdown from "../components/HeaderDropdown.jsx";
-import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faTasks } from "@fortawesome/free-solid-svg-icons";
 
@@ -20,8 +19,7 @@ const Dashboardd1 = () => {
   const [openDropdown, setOpenDropdown] = useState(false);
   const [boardModalOpen, setBoardModalOpen] = useState(false);
   const [boardType, setBoardType] = useState("add");
-  const boards = useSelector((state) => state.boards);
-  const board = boards.find((board) => board.isActive);
+
   useEffect(() => {
     if (token && user) {
       axiosClient.get("/user").then(({ data }) => {

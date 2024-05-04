@@ -1,11 +1,12 @@
+// AddEditBoardModal.jsx
 import React, { useState } from "react";
 import axiosClient from "../axios-client.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import toast from "react-hot-toast";
-import { useStateContext } from "../context/ContextProvider.jsx";
+import { useStateContext } from "../context/ContextProvider";
 
-function AddEditBoardModal({ setBoardModalOpen, type }) {
+function AddEditBoardModal({ setBoardModalOpen, type, updateNotifications }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadlineError, setDeadlineError] = useState("");
@@ -28,13 +29,8 @@ function AddEditBoardModal({ setBoardModalOpen, type }) {
           description: description,
           deadline: deadline ? deadline.toISOString().split("T")[0] : null,
         });
-
-        // Mise à jour de la liste des projets du chef avec le nouveau projet ajouté
         setChefProjects((prevProjects) => [...prevProjects, response.data]);
-
-        // Fermer le modal après la création du projet
         setBoardModalOpen(false);
-
         toast.success("Project created successfully!");
       } catch (error) {
         console.error("Error creating project:", error);

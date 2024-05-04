@@ -32,6 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::get('/projectsWithRole', [ProjectController::class, 'showProjectsWithRole']);
    Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
    Route::get('projects/{projectId}/members', [ProjectController::class, 'showMembers']);
+   Route::get('/projects/{projectId}/chef/avatar', [ProjectController::class, 'getProjectChefAvatar']);
+
    Route::get('/usersNotMembers', [UserController::class, 'usersNotMembers']);
    Route::post('/add-member-to-project', [MembershipController::class, 'addMemberToProject']);
    Route::delete('/remove-member-from-project', [MembershipController::class,'removeMemberFromProject']);
@@ -61,8 +63,18 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/user1/{id}', [UserController::class, 'getUserById']);
   Route::post('/send/message', [ChatController::class, 'sendMessage'])->name('send.message');
   //pour notifications
-  Route::post('/notifications', [NotificationController::class, 'createNotification']);
-  Route::get('/notifications/{userId}', [NotificationController::class, 'getUserNotifications']);
+  Route::post('/notifications/update-unread',[NotificationController::class, 'updateUnreadNotifications']);
+  Route::get('/notifications/unread', [NotificationController::class, 'getUnreadNotifications']);
+
+  Route::get('/unread-notifications',[NotificationController::class, 'getUnreadNotifications']);
+
+  Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+
+  // Endpoint pour envoyer une notification à un utilisateur
+  Route::post('/send-notification', [NotificationController::class, 'sendMessage']);
+
+  // Route::post('/notifications', [NotificationController::class, 'createNotification']);
+  // Route::get('/notifications/{userId}', [NotificationController::class, 'getUserNotifications']);
   // Route de déconnexion
   Route::post('/logout', [AuthController::class, 'logout']);
 });

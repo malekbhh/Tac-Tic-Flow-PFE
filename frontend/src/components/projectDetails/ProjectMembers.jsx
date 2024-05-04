@@ -7,11 +7,13 @@ import toast, { Toaster } from "react-hot-toast";
 
 const ProjectMembers = ({
   members,
+  updateNotifications,
   setShowMembers,
+  project,
   projectId,
   updateMembersList,
 }) => {
-  const handleRemoveMember = async (userId) => {
+  const handleRemoveMember = async (userId, memberName) => {
     try {
       // Effectuez une requête DELETE au serveur pour supprimer le membre du projet
       await axiosClient.delete(`/remove-member-from-project`, {
@@ -20,10 +22,26 @@ const ProjectMembers = ({
       const updatedMembers = members.filter((member) => member.id !== userId);
       updateMembersList(updatedMembers);
       toast.success("Member removed successfully");
+      sendNotificationToUser(userId);
     } catch (error) {
       console.error("Error removing member:", error);
       toast.error("Failed to remove member. Please try again.");
     }
+  };
+  const sendNotificationToUser = (userId) => {
+    const notificationMessage = `Vous avez été supprimé du projet ${project.title} par le chef de projet.`;
+
+    axiosClient
+      .post("/send-notification", {
+        notification: notificationMessage,
+        receiver_id: userId,
+      })
+      .then((response) => {
+        console.log("Notification envoyée avec succès :", response);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi de la notification :", error);
+      });
   };
   return (
     <div
@@ -76,7 +94,7 @@ const ProjectMembers = ({
                 <td className=" py-2 pl-6">{member.email}</td>
                 <td className="px-4 flex items-center justify-center py-2">
                   <button
-                    onClick={() => handleRemoveMember(member.id)}
+                    onClick={() => handleRemoveMember(member.id, member.name)}
                     className="dark:bg-blue-500 bg-midnightblue flex hover:bg-blue-700 text-gray-300 font-bold py-1 px-4 items-center justify-center rounded-full "
                   >
                     Remove

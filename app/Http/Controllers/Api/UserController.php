@@ -40,6 +40,8 @@ class UserController extends Controller
         'email' => $user->email,
         'avatar' => $avatarUrl,
         'departement' => $user->departement,
+        'role' => $user->role,
+        'unreadNotifications'=>$user->unreadNotifications,
 
     ];
 
@@ -224,7 +226,32 @@ class UserController extends Controller
     // Retourner les données de l'utilisateur
     return response()->json($userData);
  }
- public function getUserByTaskId($taskId)
+//  public function getUserByTaskId($taskId)
+// {
+//     try {
+//         // Récupérer la tâche par son ID
+//         $task = Task::find($taskId);
+
+//         // Vérifier si la tâche existe
+//         if (!$task) {
+//             return response()->json(['error' => 'Tâche non trouvée'], 404);
+//         }
+
+//         // Récupérer l'ID de l'utilisateur associé à la tâche
+//         $userId = $task->user_id;
+
+//         // Utiliser la fonction getUserById pour récupérer les données de l'utilisateur
+//         $userData = $this->getUserById($userId);
+
+//         // Retourner les données de l'utilisateur
+//         return $userData;
+        
+//     } catch (\Exception $e) {
+//         // Gérer les erreurs
+//         return response()->json(['error' => $e->getMessage()], 500);
+//     }
+// }
+public function getUserByTaskId($taskId)
 {
     try {
         // Récupérer la tâche par son ID
@@ -235,17 +262,21 @@ class UserController extends Controller
             return response()->json(['error' => 'Tâche non trouvée'], 404);
         }
 
-        // Récupérer l'ID de l'utilisateur associé à la tâche
-        $userId = $task->user_id;
+        // Vérifier si l'utilisateur associé à la tâche existe
+        if (!$task->user_id) {
+            return response()->json(['message' => 'Aucun utilisateur associé à cette tâche'], 200);
+        }
 
         // Utiliser la fonction getUserById pour récupérer les données de l'utilisateur
-        $userData = $this->getUserById($userId);
+        $userData = $this->getUserById($task->user_id);
 
         // Retourner les données de l'utilisateur
         return $userData;
+        
     } catch (\Exception $e) {
         // Gérer les erreurs
         return response()->json(['error' => $e->getMessage()], 500);
     }
 }
+
 }

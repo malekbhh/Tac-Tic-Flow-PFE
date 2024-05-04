@@ -17,8 +17,25 @@ const DefaultLayout = () => {
   const [boardType, setBoardType] = useState("add");
   const { user, token, setUser, setToken } = useStateContext();
   const [isOpen, setIsOpen] = useState(true);
-  const [isNotificationOpen, setNotificationOpen] = useState(false);
+  const [isNotificationOpen, setNotificationOpen] = useState(false); // Nouvel état pour suivre l'état de la boîte de dialogue de notification
+  const { setUnreadNotifications, unreadNotifications } = useStateContext();
+  useEffect(() => {
+    const fetchUnreadNotifications = async () => {
+      try {
+        const response = await axiosClient.get("/notifications/unread");
+        setUnreadNotifications(response.data.unreadNotifications);
+        console.log(unreadNotifications);
+        setUser((prevUser) => ({
+          ...prevUser,
+          unreadNotifications: unreadNotifications,
+        }));
+      } catch (error) {
+        console.error("Error fetching unread notifications:", error);
+      }
+    };
 
+    fetchUnreadNotifications();
+  }, [setUnreadNotifications]);
   const handleDropdownToggle = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -29,6 +46,7 @@ const DefaultLayout = () => {
         if (token) {
           const { data } = await axiosClient.get("/user1");
           setUser(data);
+          setUnreadNotifications(data.unreadNotifications);
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -90,7 +108,6 @@ const DefaultLayout = () => {
                     <p className="text-base">Add New Board</p>
                   </div>
                 </button>
-                {/* Icône de notification */}
 
                 <button
                   className="button px-[9px] py-[9px]  text-white bg-midnightblue rounded-full  md:hidden"
@@ -100,18 +117,24 @@ const DefaultLayout = () => {
                 >
                   <img className="h-4" src={plus} alt="icon" />
                 </button>
+
                 <div className="relative">
                   <button
                     onClick={handleNotificationToggle}
                     className="  text-midnightblue hover:opacity-80
-        duration-200 button  md:block dark:text-indigo-500  rounded-full  items-center justify-center text-xs"
+                  duration-200 button  md:block dark:text-indigo-500  rounded-full  items-center justify-center text-xs"
                   >
-                    {/* Ici, vous pouvez utiliser une icône FontAwesome ou toute autre icône de votre choix */}
                     <FontAwesomeIcon className="h-7 sm:h-6 " icon={faBell} />
+                    {unreadNotifications > 0 && (
+                      <span className="bg-red-500 rounded-full px-2 py-1 text-white text-xs absolute -top-1 -right-1">
+                        {unreadNotifications}
+                      </span>
+                    )}
                   </button>
                   <NotificationDialog
                     isOpen={isNotificationOpen}
                     onClose={handleNotificationToggle}
+                    user={user}
                   />
                 </div>
               </div>

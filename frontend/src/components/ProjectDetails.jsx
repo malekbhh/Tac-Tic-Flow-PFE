@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios-client.js";
-import { useParams } from "react-router-dom";
 import ListTasks from "./test/ListTasks";
 import toast, { Toaster } from "react-hot-toast";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { useStateContext } from "../context/ContextProvider";
-import AddMemberTask from "./projectDetails/AddMemberTask.jsx";
 import ProjectMembers from "./projectDetails/ProjectMembers";
 import ProjectHeader from "./projectDetails/ProjectHeader.jsx";
 import { useLocation } from "react-router-dom";
-
+import { useStateContext } from "../context/ContextProvider.jsx";
 const ProjectDetails = () => {
   const location = useLocation();
   const { projectId, project, isChef } = location.state;
   const [tasks, setTasks] = useState([]);
   const [showMembers, setShowMembers] = useState(false);
   const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
+  const [loading, setLoading] = useState(false);
   const [isDropSelectdownOpen, setDropSelectdownOpen] = useState(false);
   const updateMembersList = (updatedMembers) => {
     setMembers(updatedMembers);
@@ -77,22 +75,17 @@ const ProjectDetails = () => {
             isDropSelectdownOpen={isDropSelectdownOpen}
             setDropSelectdownOpen={setDropSelectdownOpen}
             isChef={isChef}
+            tasks={tasks}
+            setTasks={setTasks}
+            setSearchValue={setSearchValue}
             projectId={projectId}
             onMemberAdded={handleMemberAdded} // Passer la fonction de rappel ici
           />
         )}
 
-        {isChef && (
-          <AddMemberTask
-            projectId={projectId}
-            tasks={tasks}
-            setTasks={setTasks}
-            members={members}
-          />
-        )}
-
         {showMembers && (
           <ProjectMembers
+            project={project} // Assurez-vous que le projet est passé correctement
             members={members}
             setShowMembers={setShowMembers}
             projectId={projectId}
@@ -105,8 +98,9 @@ const ProjectDetails = () => {
             isChef={isChef}
             projectId={projectId}
             tasks={tasks}
+            searchValue={searchValue}
+            project={project}
             setTasks={setTasks}
-            // onMemberAdded={handleMemberAdded}
           />
         </div>
       </div>

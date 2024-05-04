@@ -5,21 +5,24 @@ import search from "../../assets/search1.png";
 import close from "../../assets/close.png";
 import adduser from "../../assets/adduser.png";
 import axiosClient from "../../axios-client"; // Importez votre client Axios
-
+import AddMemberTask from "./AddMemberTask";
 const ProjectHeader = ({
   project,
   members,
   toggleMembers,
   projectId,
+  setSearchValue,
   isChef,
+  tasks,
+  setTasks,
   onMemberAdded,
   setDropSelectdownOpen,
   isDropSelectdownOpen,
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
-
   const [showTable, setShowTable] = useState(false);
+
   const toggleTable = () => {
     setShowTable(!showTable);
   };
@@ -61,6 +64,7 @@ const ProjectHeader = ({
 
       if (response && response.data) {
         onMemberAdded(response.data.member);
+        sendNotificationToUser(response.data.member);
       } else {
         console.error("Invalid response format:", response);
       }
@@ -68,9 +72,23 @@ const ProjectHeader = ({
       console.error("Error adding member to project:", error);
     }
   };
+  const sendNotificationToUser = (member) => {
+    const notificationMessage = `Vous avez été ajouté au projet ${project.title}`;
 
+    axiosClient
+      .post("/send-notification", {
+        notification: notificationMessage,
+        receiver_id: member.id, // L'ID de l'utilisateur ajouté au projet
+      })
+      .then((response) => {
+        console.log("Notification sent successfully:", response);
+      })
+      .catch((error) => {
+        console.error("Error sending notification:", error);
+      });
+  };
   return (
-    <div className="dark:text-white  dark:bg-black dark:bg-opacity-30 w-full px-4 flex items-center justify-between rounded-xl h-14 bg-opacity-25 bg-white text-midnightblue">
+    <div className="dark:text-white  dark:bg-black dark:bg-opacity-30  w-[1240px] px-4 flex items-center justify-between  rounded-xl h-14 bg-opacity-25 bg-white  text-midnightblue">
       <div className="flex gap-8">
         <h2 className="text-xl dark:text-gray-300 font-semibold">
           {project.title}
@@ -102,7 +120,9 @@ const ProjectHeader = ({
         <div className="flex border-gray-500 items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
           <input
             type="text"
+            placeholder="Search for task"
             className="bg-transparent w-80 focus:outline-none text-white"
+            onChange={(e) => setSearchValue(e.target.value)}
           />
           <img src={search} alt="search icon" className="h-4 text-slate-500" />
         </div>{" "}
@@ -147,18 +167,27 @@ const ProjectHeader = ({
           </div>
         </div>
         {isChef && (
-          <button
-            onClick={toggleTable}
-            className="flex p-2 items-center  rounded-full gap-2"
-          >
-            <img className="h-6 " src={adduser} alt="icon" />
-            <p className="dark:text-gray-400 text-gray-500  font-bold">
-              Share
-            </p>{" "}
-          </button>
+          <>
+            <AddMemberTask
+              projectId={projectId}
+              tasks={tasks}
+              setTasks={setTasks}
+              project={project} // Passer le projet comme prop
+              members={members}
+            />
+            <button
+              onClick={toggleTable}
+              className="flex p-2 items-center  rounded-full gap-2"
+            >
+              <img className="h-6 " src={adduser} alt="icon" />
+              <p className="dark:text-gray-400 text-gray-500  font-bold">
+                Share
+              </p>{" "}
+            </button>
+          </>
         )}
         {showTable && (
-          <div className="h-[400px] mt-[354px] translate-x-4">
+          <div className="h-[400px] mt-[354px] translate-x-4 w-[400px]">
             <div className="flex items-center h-14 justify-between px-6 ">
               <p className="font-bold">Add members to this project</p>
               <button
@@ -170,8 +199,12 @@ const ProjectHeader = ({
                 <img className="h-4" src={close} alt="icon" />
               </button>
             </div>
-            <div
+            {/* <div
               className={`flex justify-center items-start table-container  p-4 rounded-lg h-[620px] shadow-md bg-white  bg-opacity-30  dark:bg-black dark:bg-opacity-30  `}
+            > */}
+
+            <div
+              className={`flex justify-center items-start table-container  p-4 rounded-lg h-[620px] shadow-md bg-white dark:bg-slate-900   `}
             >
               <table className="table-container ">
                 <thead className="table-header ">

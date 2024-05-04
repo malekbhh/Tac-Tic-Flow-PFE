@@ -3,6 +3,31 @@
 @tailwind utilities;
 
 
+
+*{
+  font-size: small;
+}
+
+
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-meta {
+  font-size: 1rem;
+}
+
+.notification-message {
+  color: #333;
+}
+
+
 .loading-container {
   display: flex;
   justify-content: center;

@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import edittask from "../../assets/edittask.png";
 
-function AddMemberTask({ projectId, tasks, members }) {
+function AddMemberTask({ projectId, tasks, members, setTasks, project }) {
   const [showTable, setShowTable] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState({});
   const [selectedTaskTitle, setSelectedTaskTitle] = useState(""); // Ajout du state pour stocker le titre de la tâche sélectionnée
@@ -19,26 +19,50 @@ function AddMemberTask({ projectId, tasks, members }) {
     setSelectedTaskTitle(taskTitle); // Mise à jour du titre de la tâche sélectionnée lors du changement
   };
 
-  const handleAddMember = async (memberId, taskId) => {
+  const handleAddMember = async (memberId, memberName, taskId, taskTitle) => {
     try {
       await axiosClient.put(`/projects/${projectId}/tasks/${taskId}/assign`, {
         user_id: memberId,
       });
+      // Récupérer les données de l'utilisateur nouvellement assigné à la tâche
+      const response = await axiosClient.get(`/users/${taskId}/avatar`);
+      const avatarUrl = response.data.avatar;
+      // Mettre à jour localement la liste des tâches avec l'avatar de l'utilisateur
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? { ...task, userAvatar: avatarUrl } : task
+        )
+      );
+
       toast.success("Task assigned successfully!");
+
+      sendNotificationToUser(memberId, taskTitle);
     } catch (error) {
       console.error("Error assigning task:", error);
-      toast.error("Error assigning task. Please try again.");
     }
+  };
+
+  const sendNotificationToUser = (memberId, taskTitle) => {
+    const notificationMessage = `Vous avez été ajouté au task "${taskTitle} " de projet " ${project.title}"`;
+
+    axiosClient
+      .post("/send-notification", {
+        notification: notificationMessage,
+        receiver_id: memberId,
+      })
+      .then((response) => {
+        console.log("Notification sent successfully:", response);
+      })
+      .catch((error) => {
+        console.error("Error sending notification:", error);
+      });
   };
 
   return (
     <div className="">
-      <button
-        onClick={toggleTable}
-        className="bg-white   flex p-2 rounded-full gap-2 dark:bg-gray-800"
-      >
+      <button onClick={toggleTable} className="  flex p-2 gap-2 ">
         <img className="h-6" src={edittask} alt="edit icon " />
-        <p className="text-[#9CA3AF]">Tasks</p>
+        <p className="dark:text-gray-400 text-gray-500  font-bold">Tasks</p>
       </button>
       {showTable && (
         <div
@@ -90,9 +114,18 @@ function AddMemberTask({ projectId, tasks, members }) {
                           }
                           className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
                         >
-                          <option value="">Select a task</option>
+                          <option
+                            className="dark:text-gray-300 dark:bg-slate-900"
+                            value=""
+                          >
+                            Select a task
+                          </option>
                           {tasks.map((task) => (
-                            <option key={task.id} value={task.id}>
+                            <option
+                              className="dark:text-gray-300 dark:bg-slate-900"
+                              key={task.id}
+                              value={task.id}
+                            >
                               {task.title}
                             </option>
                           ))}
@@ -101,7 +134,12 @@ function AddMemberTask({ projectId, tasks, members }) {
                       <td className="px-4 py-2">
                         <button
                           onClick={() =>
-                            handleAddMember(member.id, selectedTasks[member.id])
+                            handleAddMember(
+                              member.id,
+                              member.name,
+                              selectedTasks[member.id],
+                              selectedTaskTitle
+                            )
                           } // Passer taskId en paramètre
                           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
                         >
