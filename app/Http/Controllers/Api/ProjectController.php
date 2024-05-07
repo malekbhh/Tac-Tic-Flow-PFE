@@ -161,6 +161,8 @@ class ProjectController extends Controller
         }
     }
     
+
+    ///verifier maadech norml
     public function index(Request $request)
     {
         $user = $request->user();

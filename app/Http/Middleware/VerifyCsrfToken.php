@@ -11,7 +11,10 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array<int, string>
      */
-    protected $except = [
-        //
-    ];
+
+protected $except = [
+    // Ajoutez ici le domaine de votre application React
+    'http://localhost:3000',
+];
+
 }

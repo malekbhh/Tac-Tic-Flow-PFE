@@ -10,9 +10,95 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator; 
 use App\Models\Membership;
 use Illuminate\Support\Facades\Log;
+use App\Models\Fichier;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+
+use Illuminate\Support\Facades\Response;
+
+use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
+    
+
+    public function download(Request $request)
+    {
+        try {
+            $fileName = $request->input('filename');
+            $filePath = public_path($fileName);
+    
+            // Vérifier si le fichier existe
+            if (!file_exists($filePath)) {
+                return response()->json(['error' => 'File not found.'], 404);
+            }
+    
+            // Télécharger le fichier avec le type de contenu approprié
+            return Response::download($filePath, basename($filePath), [], 'inline'); // Utilisez 'inline' pour afficher directement le contenu dans le navigateur
+        } catch (\Exception $e) {
+            Log::error('Failed to download file: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to download file.'], 500);
+        }
+    }
+    
+
+    public function uploadAttachment(Request $request, $id)
+    {
+        try {
+            $task = Task::findOrFail($id);
+    
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+    
+                // Valider que le fichier est une image
+                if (!$file->isValid() || !in_array($file->getClientOriginalExtension(), ['jpg', 'jpeg', 'png', 'gif'])) {
+                    return response()->json(['error' => 'Invalid file. Please upload an image file.'], 400);
+                }
+    
+                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('uploads', $filename);
+    
+                $attachment = Fichier::create([
+                    'task_id' => $task->id,
+                    'name' => $filename, // Stocker le nom du fichier seulement
+                ]);
+    
+                return response()->json(['success' => true, 'file' => $attachment]);
+            } else {
+                return response()->json(['error' => 'No file uploaded.'], 400);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to upload attachment: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to upload attachment.'], 500);
+        }
+    }
+    
+    
+    public function updateTask(Request $request, $id)
+    {
+        try {
+            $task = Task::findOrFail($id);
+            if ($request->has('title')) {
+                $task->title = $request->title;
+            }
+            if ($request->has('due_date')) {
+                $dueDate = \Carbon\Carbon::parse($request->due_date)->toDateString();
+                $task->due_date = $dueDate;
+            }
+            if ($request->has('priority')) {
+                $task->priority = $request->priority;
+            }
+            $task->save();
+            $updatedTask = Task::find($task->id);
+            return response()->json(['success' => true, 'task' => $updatedTask]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update task: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to update task.'], 500);
+        }
+    }
+
+    
+    
     //
     public function createTask(Request $request, $projectId)
     {
@@ -123,7 +209,7 @@ class TaskController extends Controller
           return response()->json(['error' => 'Failed to update task status.'], 500);
         }
     }
-       
+       //vefier estaamelthech
     public function getTasksByProjectUserId($projectId)
     {
       try {
@@ -139,7 +225,7 @@ class TaskController extends Controller
           return response()->json(['error' => 'Failed to retrieve tasks by project ID.'], 500);
       }
     }
-
+//zeda
     public function getTasksByProjectAndMember($projectId, $memberId)
     {
         try {

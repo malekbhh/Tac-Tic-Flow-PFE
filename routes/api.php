@@ -10,6 +10,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Api\MembershipController;
+use App\Http\Controllers\EventsController;
 
 
 /*
@@ -50,8 +51,13 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::get('/tasks/project/{projectId}', [TaskController::class, 'getTasksByProjectUserId']);
    Route::get('/memberships/{projectId}', [MembershipController::class, 'getProjectMembers']);
    Route::get('/tasks/project/{projectId}/member/{memberId}', [TaskController::class, 'getTasksByProjectAndMember']);
+   Route::post('/tasksUpdate/{id}', [TaskController::class, 'updateTask']);
 
    Route::post('/check-user-role', [MembershipController::class, 'checkUserRoleForProject']);
+//photo
+Route::post('/tasks/{id}/upload',  [TaskController::class, 'uploadAttachment']);
+Route::get('/download-file', [TaskController::class, 'downloadFile'])->name('downloadFile');
+Route::get('/download', [TaskController::class, 'download']);
 
   //pour user 
   Route::get('/usersAccount', [UserController::class, 'indexUsers']);
@@ -73,9 +79,12 @@ Route::middleware('auth:sanctum')->group(function () {
   // Endpoint pour envoyer une notification à un utilisateur
   Route::post('/send-notification', [NotificationController::class, 'sendMessage']);
 
-  // Route::post('/notifications', [NotificationController::class, 'createNotification']);
-  // Route::get('/notifications/{userId}', [NotificationController::class, 'getUserNotifications']);
-  // Route de déconnexion
+
+  //calendar
+  Route::post('/events', [EventsController::class, 'store']);
+  Route::get('/events', [EventsController::class, 'index']); // Récupérer les événements de l'utilisateur authentifié
+  Route::delete('/events/{id}', [EventsController::class, 'destroy']);
+
   Route::post('/logout', [AuthController::class, 'logout']);
 });
 
@@ -83,6 +92,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
   //organisation Routes publiques (non authentifiées)
-  Route::post('/login', [AuthController::class, 'login']);
+  Route::post('/login', [AuthController::class, 'login'])->name('login');
   Route::post('/login-with-google', [AuthController::class, 'handleGoogleCallback']);
   Route::post('/passwordreset', [AuthController::class, 'passwordReset']);

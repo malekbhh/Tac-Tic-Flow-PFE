@@ -7,7 +7,7 @@ function NavbarHome() {
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a
             href="https://tac-tic.net/"
-            className="flex items-center space-x-1 rtl:space-x-reverse"
+            className="flex items-center  rtl:space-x-reverse"
           >
             <img src="/logo2.png" className="h-12" alt="TacTicFlowLogo" />
             <h3 className="mt-1 relative  text-white  text-3xl tracking-[0.16em] font-bold font-inherit whitespace-nowrap z-[3]">

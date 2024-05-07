@@ -14,6 +14,7 @@ import ProjectDetails from "./components/ProjectDetails.jsx";
 import Profile from "./components/Profile.jsx";
 import Messanger from "./Pages/Chat/Messanger.jsx";
 import Progress from "./views/Progress/Progress.jsx";
+import Calendar from "./views/Calendar/Calendar.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/projects",
         element: <Projects />,
+      },
+      {
+        path: "/calendar",
+        element: <Calendar />,
       },
       {
         path: "/ProjectDetails",

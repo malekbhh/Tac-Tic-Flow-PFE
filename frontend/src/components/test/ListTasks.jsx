@@ -6,6 +6,7 @@ import bin from "./bin.png";
 import edittask from "./edittask.png";
 import CreateTask from "./CreateTask";
 
+import EditTask from "../EditTask";
 function ListTasks({
   projectId,
   tasks,
@@ -14,10 +15,6 @@ function ListTasks({
   searchValue,
   project,
 }) {
-  const handleEditTask = (task) => {
-    setSelectedTask(task);
-  };
-
   const [todos, setTodos] = useState([]);
   const [doings, setDoings] = useState([]);
   const [dones, setDones] = useState([]);
@@ -54,7 +51,6 @@ function ListTasks({
           setEditTask={setEditTask}
           projectId={projectId}
           isChef={isChef}
-          onEditTask={handleEditTask}
           searchValue={searchValue}
         />
       ))}
@@ -212,7 +208,13 @@ const Header = ({ text, bg, count }) => {
     </div>
   );
 };
+
 const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [edit, setEdit] = useState({});
+  const handleTaskClick = () => {
+    setEdit({ id: task.id });
+  };
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
@@ -220,7 +222,6 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
       isDragging: !!monitor.isDragging(),
     }),
   }));
-  const [userAvatar, setUserAvatar] = useState(null);
 
   useEffect(() => {
     const fetchUserAvatar = async () => {
@@ -270,6 +271,10 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
         return "bg-gray-400"; // Default color if priority is not defined
     }
   }
+  const handleCloseEdit = () => {
+    setEdit(false);
+  };
+
   const isSearched =
     searchValue.trim() !== "" &&
     task.title.trim().toLowerCase().includes(searchValue.toLowerCase());
@@ -302,7 +307,7 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
         <>
           <button
             className="absolute top-1 right-1 text-slate-400"
-            onClick={() => handleEditTask(true)}
+            onClick={handleTaskClick}
           >
             <img className="h-4 m-2" src={edittask} alt="Edit Task" />
           </button>
@@ -332,6 +337,13 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
             />
           </div>
         )
+      )}
+      {edit && edit.id === task.id && (
+        <EditTask
+          task={task}
+          handleCloseEdit={handleCloseEdit}
+          setTasks={setTasks}
+        />
       )}
     </div>
   );

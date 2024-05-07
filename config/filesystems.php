@@ -27,6 +27,7 @@ return [
     | Supported Drivers: "local", "ftp", "sftp", "s3"
     |
     */
+    
 
     'disks' => [
 
@@ -35,6 +36,11 @@ return [
             'root' => storage_path('app'),
             'throw' => false,
         ],
+        'uploads' => [
+            'driver' => 'local', // Utilisez le pilote 'local' pour le stockage local
+            'root' => storage_path('app/uploads'), // Chemin racine pour le stockage des fichiers téléchargés
+        ],
+        
         'avatars' => [
             'driver' => 'local', // Adjust driver if needed (e.g., 's3' for Amazon S3)
             'root' => public_path('storage/avatars'), // Adjust path if needed

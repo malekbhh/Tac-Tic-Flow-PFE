@@ -7,7 +7,7 @@ import plus2 from "./plus2.png";
 import close1 from "./close1.png";
 import check from "./check.png";
 import SelectPriority from "./SelectPriority";
-import { useStateContext } from "../../context/ContextProvider";
+// import { useStateContext } from "../../context/ContextProvider";
 function CreateTask({ projectId, setTasks, project }) {
   const [taskName, setTaskName] = useState("");
   const [dueDate, setDueDate] = useState(null);
@@ -62,64 +62,7 @@ function CreateTask({ projectId, setTasks, project }) {
 
     setShowInput(false);
   };
-  //   return (
-  //     <div>
-  //       {!showInput && (
-  //         <button
-  //           onClick={handleShowInput}
-  //           className=" text-[#9CA3AF] px-4 py-2 rounded-xl dark:hover:bg-gray-900 hover:bg-gray-300 w-40 focus:outline-none"
-  //         >
-  //           {" "}
-  //           <div className="flex items-center justify-center gap-2">
-  //             <img className="h-4" src={plus2} alt="icon" />
-  //             <p>Add Task</p>
-  //           </div>
-  //         </button>
-  //       )}
-  //       {showInput && (
-  //         <form
-  //           onSubmit={handleCreateTask}
-  //           className=" bg-white dark:bg-gray-900 text-black dark:text-white w-55  rounded-xl p-2"
-  //         >
-  //           <div className="flex flex-col gap-4 py-2 items-center justify-center">
-  //             <input
-  //               type="text"
-  //               value={taskName}
-  //               onChange={(e) => setTaskName(e.target.value)}
-  //               placeholder="Enter title "
-  //               className="border-b-2 w-50   bg-transparent border-gray-300 px-2 p-1 focus:border-b-0 dark:focus:border-none focus:outline-gray-300 focus:rounded-xl"
-  //             />
-  //             <DatePicker
-  //               selected={dueDate}
-  //               onChange={(date) => setDueDate(date)}
-  //               placeholderText="Enter deadline"
-  //               className="border-b-2 w-50   bg-transparent border-gray-300 px-2 p-1 focus:border-b-0   focus:outline-gray-300 focus:rounded-xl"
-  //             />
-  //             {deadlineError && (
-  //               <p className="text-sm text-red-500">{deadlineError}</p>
-  //             )}
-  //           </div>
 
-  //           <div className="flex items-center justify-center px-2 py-2 gap-6 w-full">
-  //             <button
-  //               type="submit"
-  //               className=" p-2 bg-slate-200 items-center  hover:opacity-75 dark:text-white  text-white  rounded-xl"
-  //             >
-  //               <img className="h-6" src={check} alt="icon" />
-  //             </button>
-  //             <button
-  //               type="button"
-  //               className=" px-3 py-3 bg-slate-200 items-center   hover:opacity-75 dark:text-white  text-white  rounded-xl"
-  //               onClick={handleCloseInput}
-  //             >
-  //               <img className="h-4" src={close1} alt="icon" />
-  //             </button>
-  //           </div>
-  //         </form>
-  //       )}
-  //     </div>
-  //   );
-  // }
   return (
     <div>
       {!showInput && (

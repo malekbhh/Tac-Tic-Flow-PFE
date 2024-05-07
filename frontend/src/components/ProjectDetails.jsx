@@ -7,7 +7,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import ProjectMembers from "./projectDetails/ProjectMembers";
 import ProjectHeader from "./projectDetails/ProjectHeader.jsx";
 import { useLocation } from "react-router-dom";
-import { useStateContext } from "../context/ContextProvider.jsx";
+// import { useStateContext } from "../context/ContextProvider.jsx";
 const ProjectDetails = () => {
   const location = useLocation();
   const { projectId, project, isChef } = location.state;

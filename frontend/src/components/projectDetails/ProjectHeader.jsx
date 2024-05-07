@@ -204,7 +204,7 @@ const ProjectHeader = ({
             > */}
 
             <div
-              className={`flex justify-center items-start table-container  p-4 rounded-lg h-[620px] shadow-md bg-white dark:bg-slate-900   `}
+              className={`flex justify-center items-start table-container  p-4 rounded-lg  shadow-md bg-white dark:bg-slate-900   `}
             >
               <table className="table-container ">
                 <thead className="table-header ">

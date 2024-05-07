@@ -9,19 +9,14 @@ function Profile() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const { notifications, setNotifications } = useStateContext();
+  const { user } = useStateContext();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
-      try {
-        const { data } = await axiosClient.get("/user1");
-        setPhotoPreview(data.avatar);
-        setName(data.name);
-        setEmail(data.email);
-        setNotifications(["Bienvenue"]);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
+      setPhotoPreview(user.avatar);
+      setName(user.name);
+      setEmail(user.email);
     };
 
     fetchUser();
@@ -41,6 +36,8 @@ function Profile() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     if (!photo) {
       console.error("No avatar selected");
       return;
@@ -63,11 +60,14 @@ function Profile() {
         setPhotoPreview(responseData.avatar);
         console.log("Avatar uploaded successfully!");
         window.location.reload();
+        setLoading(true);
       } else {
         console.error("Failed to upload avatar");
       }
     } catch (error) {
       console.error("Error uploading avatar:", error);
+    } finally {
+      setLoading(false); // Désactiver l'indicateur de chargement une fois que la réponse est reçue
     }
   };
 
@@ -214,12 +214,35 @@ function Profile() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="bg-indigo-600 py-2 px-4 text-center text-white rounded-md shadow-sm sm:text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:offset-2 focus:ring-indigo-500"
-                >
-                  Save
-                </button>
+                {loading ? (
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.004 8.004 0 014.01 12H0c0 3.042 1.135 5.824 2.998 7.956l3.003-2.665zM12 20c1.988 0 3.822-.73 5.22-1.936l-3.003-2.665A7.96 7.96 0 0112 20zm6.002-7.956A7.963 7.963 0 0120 12h-4c0 2.367-1.012 4.496-2.634 6.005l3.636 3.218z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 py-2 px-4 text-center text-white rounded-md shadow-sm sm:text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:offset-2 focus:ring-indigo-500"
+                  >
+                    Save
+                  </button>
+                )}
               </div>
             </div>
           </div>

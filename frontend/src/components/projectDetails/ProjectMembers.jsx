@@ -55,7 +55,7 @@ const ProjectMembers = ({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={` flex flex-col justify-start pt-11 items-center  mx-0  rounded-lg h-[500px] shadow-md bg-white    dark:bg-slate-900  w-[450px]`}
+        className={` flex flex-col justify-start pt-11 items-center  mx-0 overflow-y-auto  rounded-lg h-96 shadow-md bg-white    dark:bg-slate-900  w-[450px]`}
       >
         {" "}
         <p className="text-midnightblue dark:text-indigo-500 font-bold ">

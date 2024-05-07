@@ -19,4 +19,9 @@ class Task extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function fichiers()
+    {
+        return $this->hasMany(Fichier::class);
+    }
 }
