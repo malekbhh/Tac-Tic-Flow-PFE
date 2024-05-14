@@ -162,30 +162,46 @@ class ProjectController extends Controller
     }
     
 
-    ///verifier maadech norml
     public function index(Request $request)
-    {
-        $user = $request->user();
-        
-        // Vérifier si l'utilisateur est authentifié
-        if ($user) {
-            // Récupérer les projets associés à cet utilisateur dans la table memberships
-            $projects = Project::join('memberships', 'projects.id', '=', 'memberships.project_id')
-                ->where('memberships.user_id', $user->id)
-                ->get(['projects.*']);
+{
+    $user = $request->user();
     
-            if ($projects->isNotEmpty()) {
-                // Des projets sont associés à cet utilisateur
-                return response()->json($projects);
-            } else {
-                // Aucun projet trouvé pour cet utilisateur
-                return response()->json(['message' => 'No projects found for this user'], 404);
-            }
+    // Vérifier si l'utilisateur est authentifié
+    if ($user) {
+        // Récupérer la page demandée depuis la requête
+        $page = $request->query('page', 1);
+        $perPage = 5; // Nombre de projets par page
+
+        // Calculer l'offset pour la pagination
+        $offset = ($page - 1) * $perPage;
+
+        // Récupérer les projets associés à cet utilisateur dans la table memberships avec pagination
+        $projects = Project::join('memberships', 'projects.id', '=', 'memberships.project_id')
+            ->where('memberships.user_id', $user->id)
+            ->skip($offset)
+            ->take($perPage)
+            ->get(['projects.*']);
+
+        // Récupérer le nombre total de projets associés à cet utilisateur
+        $totalProjectsCount = Project::join('memberships', 'projects.id', '=', 'memberships.project_id')
+            ->where('memberships.user_id', $user->id)
+            ->count();
+
+        if ($projects->isNotEmpty()) {
+            // Des projets sont associés à cet utilisateur
+            return response()->json([
+                'projects' => $projects,
+                'totalProjectsCount' => $totalProjectsCount
+            ]);
         } else {
-            // Utilisateur non authentifié
-            return response()->json(['error' => 'Unauthorized'], 401);
+            // Aucun projet trouvé pour cet utilisateur
+            return response()->json(['message' => 'No projects found for this user'], 404);
         }
+    } else {
+        // Utilisateur non authentifié
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
+}
 
 
 

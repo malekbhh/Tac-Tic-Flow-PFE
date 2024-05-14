@@ -6,6 +6,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ProjectMembers from "./projectDetails/ProjectMembers";
 import ProjectHeader from "./projectDetails/ProjectHeader.jsx";
+import { useStateContext } from "../context/ContextProvider.jsx";
 import { useLocation } from "react-router-dom";
 // import { useStateContext } from "../context/ContextProvider.jsx";
 const ProjectDetails = () => {
@@ -15,7 +16,7 @@ const ProjectDetails = () => {
   const [showMembers, setShowMembers] = useState(false);
   const [members, setMembers] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
+  const { notifications } = useStateContext();
   const [loading, setLoading] = useState(false);
   const [isDropSelectdownOpen, setDropSelectdownOpen] = useState(false);
   const updateMembersList = (updatedMembers) => {
@@ -40,8 +41,23 @@ const ProjectDetails = () => {
     };
 
     fetchData();
-  }, [projectId]);
+  }, [projectId, notifications]);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const tasksResponse = await axiosClient.get(
+  //         `/projects/${projectId}/tasks`
+  //       );
+  //       setTasks(tasksResponse.data);
+  //       console.log(tasksResponse.data);
+  //     } catch (error) {
+  //       console.error("Error fetching tasks:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [notifications]);
   useEffect(() => {
     const fetchData = async () => {
       try {

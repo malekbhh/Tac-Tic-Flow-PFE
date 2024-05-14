@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../../axios-client";
+import Chart from "chart.js/auto";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import useDarkMode from "../../Hooks/useDarkMode"; // Importez votre hook useDarkMode
 
 function ProgressProject({ projectId, showMore, setShowMore }) {
   const [tasks, setTasks] = useState([]);
   const [taskProgress, setTaskProgress] = useState([]);
   const [closedTasksPercentage, setClosedTasksPercentage] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [colorTheme] = useDarkMode(); // Utilisez le hook useDarkMode pour obtenir le thème actuel
 
   useEffect(() => {
     const fetchData = async () => {
@@ -13,8 +19,10 @@ function ProgressProject({ projectId, showMore, setShowMore }) {
           `/projects/${projectId}/tasks`
         );
         setTasks(tasksResponse.data);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching tasks:", error);
+        setIsLoading(false);
       }
     };
 
@@ -34,6 +42,7 @@ function ProgressProject({ projectId, showMore, setShowMore }) {
     const totalTasks = tasks.length;
     return Object.keys(statuses).map((status) => ({
       status,
+      count: statuses[status],
       percentage:
         totalTasks > 0 ? ((statuses[status] / totalTasks) * 100).toFixed(2) : 0,
     }));
@@ -49,67 +58,83 @@ function ProgressProject({ projectId, showMore, setShowMore }) {
       : 0;
   };
 
+  useEffect(() => {
+    if (taskProgress.length > 0) {
+      const doughnutCanvas = document.getElementById("doughnutChart");
+      if (doughnutCanvas) {
+        const doughnutCtx = doughnutCanvas.getContext("2d");
+
+        const doughnutChart = new Chart(doughnutCtx, {
+          type: "doughnut",
+          data: {
+            labels: taskProgress.map(
+              (progress) => `${progress.status} (${progress.percentage}%)`
+            ),
+            datasets: [
+              {
+                label: "Task Status",
+                data: taskProgress.map((progress) => progress.count),
+                backgroundColor: [
+                  "#F87171", // Rouge pour "To Do"
+                  "#60A5FA", // Bleu pour "Doing"
+                  "#34D399", // Vert pour "Done"
+                  "#6B7280", // Gris pour "Closed"
+                ],
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: "Your project's progress",
+              },
+              legend: {
+                display: true,
+                position: "bottom",
+              },
+            },
+            layout: {
+              padding: {
+                bottom: 15, // Réduit l'espace en bas du graphique
+              },
+            },
+            aspectRatio: 2, // Définit le rapport hauteur / largeur pour que le graphique soit un cercle parfait
+          },
+        });
+
+        return () => {
+          doughnutChart.destroy();
+        };
+      }
+    }
+  }, [taskProgress]);
+
   return (
-    <div className="w-3/4">
-      <h2 className="my-3 text-xl dark:text-gray-300 font-bold">
-        Progress Project:
-      </h2>
-      <div className="mb-4  ">
-        <div className="flex justify-between items-center gap-3">
-          {" "}
-          <p className="text-sm  dark:text-gray-300">
-            Total Closed Tasks Percentage: {closedTasksPercentage}%
-          </p>
-          <button
-            onClick={() => setShowMore(!showMore)}
-            className="dark:bg-indigo-500 dark:text-gray-300 bg-midnightblue text-white py-2 px-6 rounded-2xl"
-          >
-            Show More{" "}
-          </button>
-        </div>
-        {taskProgress.length > 0 && (
-          <div className="flex flex-wrap justify-around ">
-            {taskProgress.map((statusProgress) => (
-              <div
-                key={statusProgress.status}
-                className=" mt-4 mx-6 w-full mb-2"
+    <div className="w-full  flex-col justify-center items-center">
+      <div className="mb-4">
+        {isLoading ? (
+          <FontAwesomeIcon icon={faSpinner} spin />
+        ) : tasks.length === 0 ? (
+          <p>No tasks found.</p>
+        ) : (
+          <>
+            <div className="">
+              <canvas id="doughnutChart"></canvas>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowMore(!showMore)}
+                className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition duration-300"
               >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs dark:text-gray-300 text-center">
-                    {statusProgress.status} {statusProgress.percentage}%
-                  </p>
-                  <div className="progress-container">
-                    <div
-                      className="progress-bar"
-                      style={{
-                        width: `${statusProgress.percentage}%`,
-                        backgroundColor: getStatusColor(statusProgress.status),
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}{" "}
-      </div>{" "}
+                {showMore ? "Hide More" : "Show More"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
 export default ProgressProject;
-
-function getStatusColor(status) {
-  switch (status) {
-    case "To Do":
-      return "#F87171"; // Rouge pour "To Do"
-    case "Doing":
-      return "#60A5FA"; // Bleu pour "Doing"
-    case "Done":
-      return "#34D399"; // Vert pour "Done"
-    case "Closed":
-      return "#6B7280"; // Gris pour "Closed"
-    default:
-      return "#000000"; // Noir par défaut
-  }
-}

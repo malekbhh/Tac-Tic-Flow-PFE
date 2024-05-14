@@ -3,9 +3,46 @@
 @tailwind utilities;
 
 
+/* ProgressMember.css */
+
+.progress-path {
+  transition: stroke-dashoffset 1s linear;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: -50px;
+}
+
+.progress-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.status-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
 
 
 
+.header {
+  display: flex;
+  align-items: center;
+}
+
+
+
+
+.show-more-button:hover {
+  background-color: #3b82f6;
+}
 
 
 
@@ -78,11 +115,22 @@
   transition: width 0.3s ease-in-out;
 }
 
-.project-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+
+
+.loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #212177; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 .project-card {
   width: 300px;

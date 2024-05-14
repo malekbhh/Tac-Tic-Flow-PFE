@@ -13,12 +13,12 @@ function ProjectCard({ project, onClick, isSelected }) {
         <h3 className="text-lg dark:text-gray-300 font-semibold mb-2">
           {project.title}
         </h3>
-        <p className="text-sm dark:text-gray-300 text-gray-600 mb-4">
+        {/* <p className="text-sm dark:text-gray-300 text-gray-600 mb-4">
           {project.description}
         </p>
         <p className="text-sm dark:text-gray-300 text-gray-600 mb-4">
           {project.deadline}
-        </p>
+        </p> */}
       </motion.div>
     </div>
   );

@@ -21,6 +21,7 @@
         "@inertiajs/react": "^1.0.15",
         "@material-tailwind/react": "^2.1.9",
         "bootstrap": "^5.3.3",
+        "chart.js": "^3.0.0",
         "firebase": "^10.8.0",
         "generate-password": "^1.7.1",
         "laravel-echo": "^1.16.0",

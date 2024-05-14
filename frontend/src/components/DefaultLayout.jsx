@@ -19,23 +19,23 @@ const DefaultLayout = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isNotificationOpen, setNotificationOpen] = useState(false); // Nouvel état pour suivre l'état de la boîte de dialogue de notification
   const { setUnreadNotifications, unreadNotifications } = useStateContext();
-  useEffect(() => {
-    const fetchUnreadNotifications = async () => {
-      try {
-        const response = await axiosClient.get("/notifications/unread");
-        setUnreadNotifications(response.data.unreadNotifications);
-        console.log(unreadNotifications);
-        setUser((prevUser) => ({
-          ...prevUser,
-          unreadNotifications: unreadNotifications,
-        }));
-      } catch (error) {
-        console.error("Error fetching unread notifications:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUnreadNotifications = async () => {
+  //     try {
+  //       const response = await axiosClient.get("/notifications/unread");
+  //       setUnreadNotifications(response.data.unreadNotifications);
+  //       console.log(unreadNotifications);
+  //       setUser((prevUser) => ({
+  //         ...prevUser,
+  //         unreadNotifications: unreadNotifications,
+  //       }));
+  //     } catch (error) {
+  //       console.error("Error fetching unread notifications:", error);
+  //     }
+  //   };
 
-    fetchUnreadNotifications();
-  }, [setUnreadNotifications]);
+  //   fetchUnreadNotifications();
+  // }, [setUnreadNotifications]);
   const handleDropdownToggle = () => {
     setDropdownOpen(!isDropdownOpen);
   };
@@ -225,8 +225,8 @@ const DefaultLayout = () => {
                 setBoardModalOpen={setBoardModalOpen}
               />
             )}
-            <main className=" h-full ">
-              <Outlet className="relative " />
+            <main className="h-full mb-24 w-full ">
+              <Outlet />
             </main>{" "}
           </div>
         </div>
