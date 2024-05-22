@@ -16,7 +16,7 @@ const ProjectDetails = () => {
   const [showMembers, setShowMembers] = useState(false);
   const [members, setMembers] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const { notifications } = useStateContext();
+  const { notifications, user } = useStateContext();
   const [loading, setLoading] = useState(false);
   const [isDropSelectdownOpen, setDropSelectdownOpen] = useState(false);
   const updateMembersList = (updatedMembers) => {
@@ -43,21 +43,6 @@ const ProjectDetails = () => {
     fetchData();
   }, [projectId, notifications]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const tasksResponse = await axiosClient.get(
-  //         `/projects/${projectId}/tasks`
-  //       );
-  //       setTasks(tasksResponse.data);
-  //       console.log(tasksResponse.data);
-  //     } catch (error) {
-  //       console.error("Error fetching tasks:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [notifications]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,6 +90,9 @@ const ProjectDetails = () => {
             members={members}
             setShowMembers={setShowMembers}
             projectId={projectId}
+            tasks={tasks}
+            isChef={isChef}
+            setTasks={setTasks}
             updateMembersList={updateMembersList} // Passer la fonction updateMembersList
           />
         )}
@@ -115,6 +103,7 @@ const ProjectDetails = () => {
             projectId={projectId}
             tasks={tasks}
             searchValue={searchValue}
+            user={user}
             project={project}
             setTasks={setTasks}
           />

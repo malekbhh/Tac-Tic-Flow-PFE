@@ -32,7 +32,7 @@ function SideBar({
   return (
     <div>
       <aside
-        className={` fixed w-56 bg-white  bg-opacity-30 top-2 left-2  rounded-2xl z-40 h-[98%]
+        className={` fixed w-60 bg-white  bg-opacity-30 top-2 left-2  rounded-2xl z-40 h-[98%]
         pt-4  pl-1
         transition-transform
         -translate-x-full

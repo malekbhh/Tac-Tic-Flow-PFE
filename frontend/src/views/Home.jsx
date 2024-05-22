@@ -1,82 +1,88 @@
 import React from "react";
 import NavbarHome from "../components/NavbarHome";
 import FooterHome from "../components/FooterHome";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import FeatureCard from "../components/FeatureCard";
 
 function Home() {
   return (
-    <div className="flex flex-col min-h-screen ">
-      {" "}
+    <div className="flex flex-col min-h-screen font-sans text-base md:text-lg">
       <NavbarHome className="shadow-md bg-white" />
-      <div className="flex   flex-col md:flex-row justify-around items-center">
-        <section>
-          <div className="text-start flex flex-col items-start justify-center py-20 md:py-40">
-            <h1 className="text-5xl font-bold leading-tight text-start text-white">
-              Empower Your Projects
-            </h1>
-            <p className="text-3xl font-medium mt-4 text-start text-white">
-              with{" "}
-              <span className="text-5xl font-bold text-white">TacticFlow</span>
-            </p>
-            <p className="text-xl mt-4 text-start text-gray-300">
-              Organize, collaborate, and track your projects with ease.
-            </p>
-            <div className="flex justify-center mt-8">
-              <div className="flex flex-row">
-                <input
-                  type="email"
-                  className="border border-gray-300 text-xl rounded-3xl pr-11 px-3 py-2 mr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
-                  placeholder="Enter your email"
-                  required
-                />
-                <button
-                  type="button"
-                  className="text-center text-white bg-gradient-to-r text-xl from-indigo-500 to-indigo-700
- hover:from-indigo-600 hover:to-indigo-800 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
-  font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out animate-pulse transform hover:scale-105"
-                >
-                  Verifiy Account existe or no
-                  <i className="fa fa-user-plus" aria-hidden="true"></i>
-                </button>
-              </div>
-            </div>
-          </div>
+      <div className="flex flex-col md:flex-row justify-around items-center text-white py-20 px-4 ">
+        <section className="flex mx-6 flex-col items-start justify-center text-start">
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight animate-fade-in-down">
+            Empower Your Projects
+          </h1>
+          <p className="text-2xl md:text-3xl font-medium mt-4 animate-fade-in-up">
+            with{" "}
+            <span className="text-4xl md:text-5xl font-bold">TacticFlow</span>
+          </p>
+          <p className="text-lg md:text-xl mt-4 text-gray-300 animate-fade-in-up">
+            Organize, collaborate, and track your projects with ease.
+          </p>
+          <p className="text-base md:text-lg mt-2 md:w-[480px] w-[350px] text-gray-300 animate-fade-in-up">
+            TacticFlow provides an intuitive interface for managing your tasks,
+            enabling seamless team collaboration, and tracking progress in
+            real-time.
+          </p>
         </section>
-        <div className="w-5/12">
-          {" "}
+        <div className="w-full md:w-5/12 mt-10 md:mt-0">
           <img
-            className="mt-11"
-            alt="image"
+            alt="TacticFlow illustration"
             src="/clip-path-group@2x.png"
-          />{" "}
-        </div>{" "}
+            className="max-w-full h-auto transform hover:scale-105 transition duration-300 ease-in-out"
+          />
+        </div>
       </div>
-      <div className="features mb-64 flex flex-wrap justify-center items-center mt-40">
+
+      <div id="features" className="flex mb-64 flex-wrap  justify-around">
         <FeatureCard
-          title="Project Organization Hub"
-          description="A visual and intuitive platform for organizing tasks into boards, lists, and cards."
+          title="Intuitive Task Management"
+          description="Effortlessly organize tasks with an intuitive interface, ensuring smooth workflow and easy task tracking."
           icon="fas fa-tasks"
-          image="/consumer-1@2x.png" // Replace with the path to your image
+          image="/consumer-1@2x.png"
         />
-
         <FeatureCard
-          title="Real-time Project Dashboard"
-          description="A comprehensive dashboard that provides real-time insights into the progress of each project."
+          title="Live Project Insights"
+          description="Stay updated with real-time project insights, providing comprehensive data visualization for effective decision-making."
           icon="fas fa-chart-line"
-          image="/graphic-1@2x.png" // Replace with the path to your image
+          image="/graphic-1@2x.png"
         />
-
         <FeatureCard
-          title="Team Collaboration Hub"
-          description="A comprehensive dashboard that provides real-time insights into the progress."
+          title="Enhanced Team Collaboration"
+          description="Foster seamless collaboration among team members with advanced communication tools and productivity-enhancing features."
           icon="fas fa-users"
-          image="/network-1@2x.png" // Replace with the path to your image
+          image="/network-1@2x.png"
         />
       </div>
-      <FooterHome />
+      <div
+        className="welcome-section text-white py-20 flex flex-col items-center shadow-lg rounded-lg mx-4 md:mx-0 mt-10 animate-fade-in-up"
+        style={{
+          background: "linear-gradient(234.84deg, #212177 27.56%, #ce3fa5)",
+        }}
+      >
+        <h2 className="text-4xl font-bold mb-4 animate-bounce">
+          Welcome to TacticFlow! 🎉
+        </h2>
+        <p className="text-lg md:text-xl max-w-3xl text-center mt-4">
+          We're excited to have you on board. Dive into a world where project
+          management is not only efficient but also enjoyable. Let's make your
+          projects flow seamlessly together!
+        </p>
+        <p className="text-base md:text-lg mt-4 max-w-xl text-center">
+          Together, we'll achieve great things!
+        </p>
+        <div className="mt-6">
+          <button className="bg-white text-indigo-500 font-bold py-2 px-4 rounded-full shadow-lg hover:bg-indigo-100 transition duration-300 ease-in-out transform hover:scale-105">
+            Get Started <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
+          </button>
+        </div>
+      </div>
+      <div id="footer">
+        {" "}
+        <FooterHome />
+      </div>
     </div>
   );
 }

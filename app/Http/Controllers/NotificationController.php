@@ -70,7 +70,6 @@ public function getUnreadNotifications()
 
         // Créer la notification
         $notification = Notification::create([
-            'user_id' => auth()->id(),
             'from' => auth()->id(),
             'to' => $request->receiver_id,
             'notification' => $request->notification,

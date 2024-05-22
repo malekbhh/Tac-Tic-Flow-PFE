@@ -14,15 +14,14 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
-} from "@mui/material"; // Import des composants nécessaires
+} from "@mui/material";
+import EventForm from "./EventForm"; // Import du formulaire d'ajout d'événement
 
 function Calendar() {
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventDate, setEventDate] = useState("");
   const [userEvents, setUserEvents] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false); // State pour la visibilité du Snackbar
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // Message pour le Snackbar
-  const [openDialog, setOpenDialog] = useState(false); // State pour la visibilité du dialogue
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
   const [eventId, setEventId] = useState(null);
 
   useEffect(() => {
@@ -42,48 +41,42 @@ function Calendar() {
     alert(arg.dateStr);
   };
 
-  const handleEventSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleEventSubmit = async ({ title, start, end }) => {
     try {
       const response = await axiosClient.post("/events", {
-        title: eventTitle,
-        start: eventDate,
+        title,
+        start,
+        end,
       });
 
-      console.log("Event created successfully:", response.data);
-
       setUserEvents((prevEvents) => [...prevEvents, response.data.event]);
-      setEventTitle("");
-      setEventDate("");
-      setOpenSnackbar(true); // Ouvre le Snackbar en cas de création réussie
-      setSnackbarMessage("Event created successfully!"); // Message pour le Snackbar
+      setOpenSnackbar(true);
+      setSnackbarMessage("Event created successfully!");
     } catch (error) {
       console.error("Error creating event:", error.message);
     }
   };
 
   const handleEventDelete = async (eventId, eventTitle) => {
-    setOpenDialog(true); // Ouvre le dialogue pour la confirmation de la suppression
+    setOpenDialog(true);
     setSnackbarMessage(
       `Are you sure you want to delete the event "${eventTitle}"?`
-    ); // Message pour le dialogue
-    // Définir les variables eventId et eventTitle dans l'état local pour les utiliser dans handleConfirmDelete
+    );
     setEventId(eventId);
-    setEventTitle(eventTitle);
   };
+
   const handleConfirmDelete = async () => {
     try {
       await axiosClient.delete(`/events/${eventId}`);
       setUserEvents((prevEvents) =>
         prevEvents.filter((event) => event.id != eventId)
       );
-      setOpenSnackbar(true); // Ouvre le Snackbar en cas de suppression réussie
-      setSnackbarMessage(`Event "${eventTitle}" deleted.`); // Message pour le Snackbar
+      setOpenSnackbar(true);
+      setSnackbarMessage(`Event deleted.`);
     } catch (error) {
       console.error("Error deleting event:", error.message);
     }
-    setOpenDialog(false); // Ferme le dialogue après confirmation
+    setOpenDialog(false);
   };
 
   const renderEventContent = (eventInfo) => {
@@ -121,29 +114,8 @@ function Calendar() {
         eventContent={renderEventContent}
         dateClick={handleDateClick}
       />
-      <div className="w-fit mt-6">
-        <h2 className="font-bold">Add an Event</h2>
-        <form className="flex gap-4 mt-4" onSubmit={handleEventSubmit}>
-          <input
-            type="text"
-            className="p-2 rounded-full"
-            placeholder="Event Title"
-            value={eventTitle}
-            onChange={(e) => setEventTitle(e.target.value)}
-          />
-          <input
-            type="datetime-local"
-            value={eventDate}
-            className="p-2 rounded-full w-full"
-            onChange={(e) => setEventDate(e.target.value)}
-          />
-          <button
-            className="px-6  bg-slate-800 rounded-full text-white"
-            type="submit"
-          >
-            Add
-          </button>
-        </form>
+      <div className="w-full mt-6">
+        <EventForm onSubmit={handleEventSubmit} />
       </div>{" "}
       <Snackbar
         open={openSnackbar}
@@ -159,10 +131,7 @@ function Calendar() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button
-            onClick={() => handleConfirmDelete(eventId, eventTitle)}
-            color="error"
-          >
+          <Button onClick={() => handleConfirmDelete(eventId)} color="error">
             Delete
           </Button>
         </DialogActions>

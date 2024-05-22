@@ -5,6 +5,98 @@
 
 /* ProgressMember.css */
 
+
+
+
+
+.projects-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  font-size: 48px;
+  color: #333;
+}
+
+.project-cards-container {
+  width: 80%;
+  max-width: 1200px;
+}
+
+.project-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-button {
+  border: none;
+  background-color: transparent;
+  color: #333;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.page-button.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+
+@keyframes fade-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 1s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s ease-out;
+}
+
+
 .progress-path {
   transition: stroke-dashoffset 1s linear;
 }
@@ -113,6 +205,13 @@
   height: 100%;
   border-radius: 10px;
   transition: width 0.3s ease-in-out;
+}
+/* Dans votre fichier CSS */
+
+.alarm-icon {
+  font-size: 20px;
+  color: red; /* Couleur de l'icône d'alarme */
+  margin-left: 5px; /* Marge à gauche de l'icône */
 }
 
 

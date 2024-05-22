@@ -1,20 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+
 function NavbarHome() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div>
-      <nav className="   w-full z-20 top-0 start-0 shadow-md   ">
-        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <nav className="w-full z-20 top-0 start-0 shadow-md">
+        <div className="max-w-screen-xl  flex flex-wrap items-center justify-between mx-auto p-4">
           <a
             href="https://tac-tic.net/"
-            className="flex items-center  rtl:space-x-reverse"
+            className="flex items-center rtl:space-x-reverse"
           >
             <img src="/logo2.png" className="h-12" alt="TacTicFlowLogo" />
-            <h3 className="mt-1 relative  text-white  text-3xl tracking-[0.16em] font-bold font-inherit whitespace-nowrap z-[3]">
-              acticFlow
+            <h3 className="mt-1 relative text-white text-3xl tracking-[0.16em] font-bold font-inherit whitespace-nowrap z-[3]">
+              TacticFlow
             </h3>
           </a>
-          <div className="flex md:order-2   space-x-3 md:space-x-0 rtl:space-x-reverse">
+          <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             <div className="button-container flex flex-col md:flex-row items-center space-y-4 md:space-y-0">
               <Link to="/login">
                 <button
@@ -26,7 +33,10 @@ function NavbarHome() {
               </Link>
             </div>
 
-            <button className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <button
+              className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              onClick={toggleMenu}
+            >
               <span className="sr-only">Open main menu</span>
               <svg
                 className="w-5 h-5"
@@ -46,41 +56,43 @@ function NavbarHome() {
             </button>
           </div>
           <div
-            className="hidden w-full md:flex md:items-center md:justify-between md:w-auto "
+            className={`${
+              isOpen ? "block" : "hidden"
+            } w-full md:block md:items-center md:justify-between md:w-auto`}
             id="navbar-sticky"
           >
-            <ul className="flex  flex-col md:flex-row justify-between md:space-x-8 items-center md:items-stretch py-4 px-4 md:px-0">
+            <ul className="flex flex-col md:flex-row justify-between md:space-x-8 items-center md:items-stretch py-4 px-4 md:px-0">
               <li>
-                <Link
-                  to="#"
+                <a
+                  href="#"
                   className="block text-xl text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
                 >
                   Home
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
-                  to="#"
-                  className="block text-xl  text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
+                <a
+                  href="#footer"
+                  className="block text-xl text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
                 >
                   About Us
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
-                  to="#"
-                  className="block text-xl  text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
+                <a
+                  href="#features"
+                  className="block text-xl text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
                 >
                   Features
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
-                  to="#"
-                  className="block text-xl  text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
+                <a
+                  href="#guide"
+                  className="block text-xl text-white px-4 py-2 rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-400"
                 >
                   Guide
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

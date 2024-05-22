@@ -6,12 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    
     public function up()
     {
-        Schema::create('fichiers', function (Blueprint $table) {
+        Schema::create('links', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
+            $table->string('url')->nullable(); // Changer 'name' par 'url'
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
@@ -19,6 +18,6 @@ return new class extends Migration
   
     public function down()
     {
-        Schema::dropIfExists('fichiers');
+        Schema::dropIfExists('links');
     }
 };

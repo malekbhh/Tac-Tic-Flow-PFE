@@ -81,60 +81,61 @@ class UserController extends Controller
       return response()->json(['error' => 'Internal Server Error'], 500);
     }
  }
-
  public function updatePhoto(Request $request)
  {
-    // Check for file, access control, and validation
-    $validator = Validator::make($request->all(), [
-        'avatar' => 'sometimes|image|mimes:jpeg,png,jpg', // Adjust limits as needed
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 422);
-    }
-
-    // Get the authenticated user
-    $user = Auth::user();
-
-    // Handle avatar update if provided
-    if ($request->hasFile('avatar')) {
-        // Get the uploaded file
-        $avatar = $request->file('avatar');
-
-        // Generate a unique filename with extension
-        $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
-
-        // Secure storage with access control (consider private storage)
-        $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
-        $path = $disk->put($avatarName, $avatar->getContent());
-
-        if (!$path) {
-            return response()->json(['error' => 'Failed to store avatar'], 500);
-        }
-
-        // Update the user's avatar path in the database
-        $user->avatar = $avatarName;
-    }
-
-    // Update user fields if provided
-    if ($request->filled('name')) {
-        $user->name = $request->input('name');
-    }
-    if ($request->filled('email')) {
-        $user->email = $request->input('email');
-    }
-    if ($request->filled('password')) {
-        $user->password = bcrypt($request->input('password')); // Hash the password for security
-    }
-
-    // Save the user's updates
-    $user->save();
-
-    // Return a JSON response with updated user details
-    return response()->json([
-        'user' => $user, // Optionally, return updated user details
-    ]);
+     // Check for file, access control, and validation
+     $validator = Validator::make($request->all(), [
+         'avatar' => 'sometimes|image|mimes:jpeg,png,jpg',
+         'password' => 'sometimes|confirmed', // This requires a matching 'password_confirmation' field
+     ]);
+ 
+     if ($validator->fails()) {
+         return response()->json($validator->errors(), 422);
+     }
+ 
+     // Get the authenticated user
+     $user = Auth::user();
+ 
+     // Handle avatar update if provided
+     if ($request->hasFile('avatar')) {
+         // Get the uploaded file
+         $avatar = $request->file('avatar');
+ 
+         // Generate a unique filename with extension
+         $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
+ 
+         // Secure storage with access control (consider private storage)
+         $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
+         $path = $disk->put($avatarName, file_get_contents($avatar));
+ 
+         if (!$path) {
+             return response()->json(['error' => 'Failed to store avatar'], 500);
+         }
+ 
+         // Update the user's avatar path in the database
+         $user->avatar = $avatarName;
+     }
+ 
+     // Update user fields if provided
+     if ($request->filled('name')) {
+         $user->name = $request->input('name');
+     }
+     if ($request->filled('email')) {
+         $user->email = $request->input('email');
+     }
+     if ($request->filled('password')) {
+         $user->password = bcrypt($request->input('password')); // Hash the password for security
+     }
+ 
+     // Save the user's updates
+     $user->save();
+ 
+     // Return a JSON response with updated user details
+     return response()->json([
+         'user' => $user, // Optionally, return updated user details
+     ]);
  }
+ 
 
  public function indexUsers()
  {
@@ -200,7 +201,7 @@ class UserController extends Controller
 
  public function getChatUsers()
  {
-    $users= User::where('id','<>',auth()->id())->paginate(50);
+    $users= User::where('id','<>',auth()->id())->paginate(5);
     return $users;
  }
 
@@ -263,12 +264,12 @@ public function getUserByTaskId($taskId)
         }
 
         // Vérifier si l'utilisateur associé à la tâche existe
-        if (!$task->user_id) {
+        if (!$task->assigned_for) {
             return response()->json(['message' => 'Aucun utilisateur associé à cette tâche'], 200);
         }
 
         // Utiliser la fonction getUserById pour récupérer les données de l'utilisateur
-        $userData = $this->getUserById($task->user_id);
+        $userData = $this->getUserById($task->assigned_for);
 
         // Retourner les données de l'utilisateur
         return $userData;

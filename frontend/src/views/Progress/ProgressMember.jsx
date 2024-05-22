@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import axiosClient from "../../axios-client";
-import Chart from "chart.js/auto"; // Importez Chart.js
+import Chart from "chart.js/auto";
+import ProgressProject from "../Progress/ProgressProject";
 
 function ProgressMember({ projectId }) {
   const [taskProgress, setTaskProgress] = useState([]);
   const [selectedProjectTasks, setSelectedProjectTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showTasks, setShowTasks] = useState(false);
-  const chartRef = useRef(null); // Créez une référence pour le canvas
+  const chartRef = useRef(null);
 
   useEffect(() => {
     const loadProjectData = async () => {
@@ -56,12 +57,7 @@ function ProgressMember({ projectId }) {
             {
               label: "Percentage",
               data: taskProgress.map((progress) => progress.percentage),
-              backgroundColor: [
-                "#F87171", // Rouge pour "To Do"
-                "#60A5FA", // Bleu pour "Doing"
-                "#34D399", // Vert pour "Done"
-                "#6B7280", // Gris pour "Closed"
-              ],
+              backgroundColor: ["#F87171", "#60A5FA", "#34D399", "#6B7280"],
             },
           ],
         },
@@ -72,47 +68,40 @@ function ProgressMember({ projectId }) {
               title: {
                 display: true,
                 text: "Percentage",
-                color: "#4B5563", // Couleur du titre de l'axe Y
+                color: "#4B5563",
                 font: {
-                  size: 14, // Taille de police du titre de l'axe Y
+                  size: 18,
                 },
               },
               ticks: {
-                color: "#4B5563", // Couleur des étiquettes de l'axe Y
+                color: "#4B5563",
               },
             },
             x: {
               title: {
                 display: true,
-                text: "Task Status", // Titre de l'axe X
-                color: "#4B5563", // Couleur du titre de l'axe X
+                text: "Task Status",
+                padding: 15,
+                color: "#4B5563",
                 font: {
-                  size: 14, // Taille de police du titre de l'axe X
+                  size: 18,
                 },
               },
               ticks: {
-                color: "#4B5563", // Couleur des étiquettes de l'axe X
+                color: "#4B5563",
               },
             },
           },
           plugins: {
-            title: {
-              display: true,
-              text: "Your task's progress ",
-            },
-
             legend: {
-              display: false, // Masquer la légende
+              display: false,
             },
           },
         },
       });
 
-      // Réglez la taille du canvas pour être la même que celle de son parent
-      chartRef.current.style.width = "100%";
-      chartRef.current.style.height = "100%"; // Hauteur du graphique
-      chartRef.current.width = chartRef.current.offsetWidth;
-      chartRef.current.height = chartRef.current.offsetHeight;
+      chartRef.current.style.width = "500px"; // Taille fixe en pixels
+      chartRef.current.style.height = "400px"; // Taille fixe en pixels
     }
   }, [taskProgress]);
 
@@ -122,76 +111,85 @@ function ProgressMember({ projectId }) {
 
   const hasTasks = selectedProjectTasks && selectedProjectTasks.length > 0;
 
-  // Fonction pour obtenir la classe CSS en fonction du statut de la tâche
   const getStatusColor = (status) => {
     switch (status) {
       case "To Do":
-        return "bg-red-500 text-red-500";
+        return "text-red-500";
       case "Doing":
-        return "bg-blue-500 text-blue-500";
+        return "text-blue-500";
       case "Done":
-        return "bg-green-500 text-green-500";
+        return "text-green-500";
       case "Closed":
-        return "bg-gray-500 text-gray-500";
+        return "text-gray-500";
       default:
-        return "bg-gray-500 text-gray-500 ";
+        return "text-gray-500";
     }
   };
 
   return (
-    <div className="flex justify-center items-center  w-[85%] flex-col gap-4  px-4 ">
-      {taskProgress.length > 0 && (
-        <div className="w-[80%] h-[80%]">
-          <canvas ref={chartRef}></canvas>{" "}
-          {/* Utilisez la référence pour le canvas */}
+    <div className="flex flex-col items-center w-full justify-center gap-4 pr-8 py-6">
+      <div className="grid grid-cols-1  lg:grid-cols-2 gap-4 w-full rounded-xl">
+        <div className="shadow-lg bg-white flex flex-col justify-between items-center dark:bg-gray-900 bg-opacity-30 dark:bg-opacity-35 rounded-lg">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-300 mt-4">
+            Project's progress
+          </h2>
+          <div className="flex justify-center items-center">
+            <ProgressProject projectId={projectId} />
+          </div>
         </div>
-      )}
+        {taskProgress.length > 0 && (
+          <div className="flex flex-col w-full  justify-between items-center  py-3 shadow-lg rounded-lg bg-white dark:bg-gray-900 bg-opacity-30 dark:bg-opacity-35">
+            <h2 className="text-2xl font-bold  ml-2 text-gray-800 dark:text-gray-300 md:mr-6">
+              Task Progress Chart
+            </h2>
+            <div className="" style={{ width: "500px", height: "400px" }}>
+              <canvas
+                ref={chartRef}
+                style={{ width: "100%", height: "100%" }}
+              ></canvas>
+            </div>
+          </div>
+        )}
+      </div>
       {showTasks && (
-        <div className="w-full mt-6">
-          {hasTasks && (
-            <table className="w-full dark:text-gray-300 border-collapse border border-gray-300 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100 bg-opacity-30 dark:bg-black dark:bg-opacity-30">
+        <div className="w-full mt-6 rounded-lg overflow-hidden shadow-xl dark:text-gray-200">
+          {hasTasks ? (
+            <table className="w-full text-center">
+              <thead className="bg-gray-100 dark:bg-black bg-opacity-30 dark:bg-opacity-30">
                 <tr>
-                  <th className="py-2 px-4 text-left">Title</th>
-                  <th className="py-2 px-4 text-left">Deadline</th>
-                  <th className="py-2 px-4 text-left">Status</th>
+                  <th className="py-2 px-4">Title</th>
+                  <th className="py-2 px-4">Deadline</th>
+                  <th className="py-2 px-4">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedProjectTasks.map((task) => (
                   <tr
                     key={task.id}
-                    className="hover:bg-gray-50 hover:bg-opacity-30 dark:hover:bg-black dark:hover:bg-opacity-30"
+                    className="hover:bg-gray-50 hover:bg-opacity-30 dark:hover:bg-black   hover:dark:bg-opacity-30"
                   >
                     <td className="py-3 px-4">{task.title}</td>
                     <td className="py-3 px-4">{task.due_date}</td>
-                    <td
-                      className={`py-3 px-4 text-${getStatusColor(
-                        task.status
-                      )}`}
-                    >
+                    <td className={`py-3 px-4 ${getStatusColor(task.status)}`}>
                       {task.status}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-          {!hasTasks && (
-            <p className="text-center mt-4">
-              No tasks existed for this project.
+          ) : (
+            <p className="text-center mt-4 text-gray-500 dark:text-gray-300">
+              No tasks exist for this project.
             </p>
           )}
         </div>
       )}
-      <div className=" flex justify-end ml-2 w-full">
-        <button
-          className="text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded-full transition duration-300"
-          onClick={toggleTasks}
-        >
-          {showTasks ? "Hide Tasks" : "Show Tasks"}
-        </button>
-      </div>
+      <button
+        className="mt-4 text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded-full transition duration-300"
+        onClick={toggleTasks}
+      >
+        {showTasks ? "Hide Tasks" : "Show Tasks"}
+      </button>
     </div>
   );
 }

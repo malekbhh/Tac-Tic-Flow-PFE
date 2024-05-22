@@ -10,6 +10,7 @@ import plus1 from "../assets/plus1.png";
 import plus from "../assets/plus1.png";
 import NotificationDialog from "./Notifications/NotificationDialog.jsx";
 import SideBar from "./contentsDefaultLayout/SideBar.jsx";
+
 const DefaultLayout = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
@@ -110,7 +111,7 @@ const DefaultLayout = () => {
                 </button>
 
                 <button
-                  className="button px-[9px] py-[9px]  text-white bg-midnightblue rounded-full  md:hidden"
+                  className="button px-[9px] py-[9px]  text-white bg-indigo-500 rounded-full  md:hidden"
                   onClick={() => {
                     setBoardModalOpen((state) => !state);
                   }}
@@ -124,7 +125,7 @@ const DefaultLayout = () => {
                     className="  text-midnightblue hover:opacity-80
                   duration-200 button  md:block dark:text-indigo-500  rounded-full  items-center justify-center text-xs"
                   >
-                    <FontAwesomeIcon className="h-7 sm:h-6 " icon={faBell} />
+                    <FontAwesomeIcon className="h-7 sm:h-7 " icon={faBell} />
                     {unreadNotifications > 0 && (
                       <span className="bg-red-500 rounded-full px-2 py-1 text-white text-xs absolute -top-1 -right-1">
                         {unreadNotifications}

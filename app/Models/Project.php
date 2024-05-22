@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Project extends Model
 {
     use HasFactory;
-    protected $fillable = ['column_c', 'title', 'description', 'user_id'];
+    protected $fillable = [ 'title', 'description'];
 
     public function timestamps()
     {
@@ -28,6 +28,6 @@ class Project extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'memberships')
-                    ->withPivot('user_role'); // Si vous avez d'autres colonnes pivot, ajoutez-les ici
-    }   
+                    ->withPivot('user_role');
+    }
 }

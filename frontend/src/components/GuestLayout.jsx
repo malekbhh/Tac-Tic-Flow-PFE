@@ -10,7 +10,7 @@ function GuestLayout() {
 
   return (
     <div
-      className="w-full"
+      className="w-full h-full"
       style={{
         background: "linear-gradient(234.84deg, #212177 27.56%, #ce3fa5)",
       }}

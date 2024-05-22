@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import axiosClient from "../../axios-client";
 import Chart from "chart.js/auto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import useDarkMode from "../../Hooks/useDarkMode"; // Importez votre hook useDarkMode
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
-function ProgressProject({ projectId, showMore, setShowMore }) {
+function ProgressProject({ projectId }) {
   const [tasks, setTasks] = useState([]);
   const [taskProgress, setTaskProgress] = useState([]);
-  const [closedTasksPercentage, setClosedTasksPercentage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [colorTheme] = useDarkMode(); // Utilisez le hook useDarkMode pour obtenir le thème actuel
+  const [chartInstance, setChartInstance] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,35 +29,14 @@ function ProgressProject({ projectId, showMore, setShowMore }) {
 
   useEffect(() => {
     setTaskProgress(calculateTaskProgress(tasks));
-    setClosedTasksPercentage(calculateClosedTasksPercentage(tasks));
   }, [tasks]);
-
-  const calculateTaskProgress = (tasks) => {
-    const statuses = { "To Do": 0, Doing: 0, Done: 0, Closed: 0 };
-    tasks.forEach((task) => {
-      statuses[task.status]++;
-    });
-    const totalTasks = tasks.length;
-    return Object.keys(statuses).map((status) => ({
-      status,
-      count: statuses[status],
-      percentage:
-        totalTasks > 0 ? ((statuses[status] / totalTasks) * 100).toFixed(2) : 0,
-    }));
-  };
-
-  const calculateClosedTasksPercentage = (tasks) => {
-    const closedTasksCount = tasks.filter(
-      (task) => task.status === "Closed"
-    ).length;
-    const totalTasks = tasks.length;
-    return totalTasks > 0
-      ? ((closedTasksCount / totalTasks) * 100).toFixed(2)
-      : 0;
-  };
 
   useEffect(() => {
     if (taskProgress.length > 0) {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
       const doughnutCanvas = document.getElementById("doughnutChart");
       if (doughnutCanvas) {
         const doughnutCtx = doughnutCanvas.getContext("2d");
@@ -74,65 +51,99 @@ function ProgressProject({ projectId, showMore, setShowMore }) {
               {
                 label: "Task Status",
                 data: taskProgress.map((progress) => progress.count),
-                backgroundColor: [
-                  "#F87171", // Rouge pour "To Do"
-                  "#60A5FA", // Bleu pour "Doing"
-                  "#34D399", // Vert pour "Done"
-                  "#6B7280", // Gris pour "Closed"
-                ],
+                backgroundColor: ["#F87171", "#60A5FA", "#34D399", "#6B7280"],
               },
             ],
           },
           options: {
             plugins: {
-              title: {
-                display: true,
-                text: "Your project's progress",
-              },
               legend: {
-                display: true,
-                position: "bottom",
+                display: false, // Hide the legend
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const label = context.label || "";
+                    const value = context.raw;
+                    return `${label}: ${value} tasks (${
+                      taskProgress[context.dataIndex].percentage
+                    }%)`;
+                  },
+                },
               },
             },
             layout: {
               padding: {
-                bottom: 15, // Réduit l'espace en bas du graphique
+                bottom: 8,
               },
             },
-            aspectRatio: 2, // Définit le rapport hauteur / largeur pour que le graphique soit un cercle parfait
+            aspectRatio: 1,
           },
         });
 
-        return () => {
-          doughnutChart.destroy();
-        };
+        setChartInstance(doughnutChart);
       }
     }
   }, [taskProgress]);
 
+  useEffect(() => {
+    return () => {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
+  }, []);
+
+  const calculateTaskProgress = (tasks) => {
+    const statuses = {
+      "To Do": "#F87171",
+      Doing: "#60A5FA",
+      Done: "#34D399",
+      Closed: "#6B7280",
+    };
+    const progressData = Object.keys(statuses).map((status) => ({
+      status,
+      count: 0,
+      percentage: 0,
+      backgroundColor: statuses[status],
+    }));
+    tasks.forEach((task) => {
+      progressData.forEach((progress) => {
+        if (progress.status === task.status) {
+          progress.count++;
+        }
+      });
+    });
+    const totalTasks = tasks.length;
+    return progressData.map((progress) => ({
+      ...progress,
+      percentage:
+        totalTasks > 0 ? ((progress.count / totalTasks) * 100).toFixed(2) : 0,
+    }));
+  };
+
   return (
-    <div className="w-full  flex-col justify-center items-center">
-      <div className="mb-4">
-        {isLoading ? (
-          <FontAwesomeIcon icon={faSpinner} spin />
-        ) : tasks.length === 0 ? (
-          <p>No tasks found.</p>
-        ) : (
-          <>
-            <div className="">
-              <canvas id="doughnutChart"></canvas>
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowMore(!showMore)}
-                className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition duration-300"
-              >
-                {showMore ? "Hide More" : "Show More"}
-              </button>
-            </div>
-          </>
-        )}
-      </div>
+    <div className="w-full flex items-center justify-center">
+      {isLoading ? (
+        <FontAwesomeIcon icon={faSpinner} spin />
+      ) : tasks.length === 0 ? (
+        <p>No tasks found.</p>
+      ) : (
+        <div className="flex flex-col items-center mt-6 justify-center">
+          <canvas id="doughnutChart"></canvas>
+          <div className="flex my-4">
+            {taskProgress.map((progress, index) => (
+              <div key={index} className="mr-4 flex items-center">
+                <div
+                  className="w-11 h-4 mr-2   rounded-xl"
+                  style={{ backgroundColor: progress.backgroundColor }}
+                ></div>
+                <span className="dark:text-gray-300">{progress.status}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

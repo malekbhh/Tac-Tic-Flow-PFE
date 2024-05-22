@@ -5,14 +5,16 @@ import axiosClient from "../../axios-client";
 import bin from "./bin.png";
 import edittask from "./edittask.png";
 import CreateTask from "./CreateTask";
-
+import { FaUserCircle } from "react-icons/fa";
 import EditTask from "../EditTask";
+
 function ListTasks({
   projectId,
   tasks,
   setTasks,
   isChef,
   searchValue,
+  user,
   project,
 }) {
   const [todos, setTodos] = useState([]);
@@ -47,6 +49,7 @@ function ListTasks({
           todos={todos}
           doings={doings}
           dones={dones}
+          user={user}
           closeds={closeds}
           setEditTask={setEditTask}
           projectId={projectId}
@@ -62,6 +65,7 @@ export default ListTasks;
 const Section = ({
   status,
   tasks,
+  user,
   setTasks,
   todos,
   searchValue,
@@ -178,6 +182,7 @@ const Section = ({
               task={task}
               searchValue={searchValue}
               tasks={tasks}
+              user={user}
               setTasks={setTasks}
               setEditTask={setEditTask}
             />
@@ -209,9 +214,11 @@ const Header = ({ text, bg, count }) => {
   );
 };
 
-const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
+const Task = ({ task, setTasks, isChef, searchValue, tasks, user }) => {
   const [userAvatar, setUserAvatar] = useState(null);
   const [edit, setEdit] = useState({});
+  const [userName, setUserName] = useState(null);
+
   const handleTaskClick = () => {
     setEdit({ id: task.id });
   };
@@ -224,10 +231,11 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
   }));
 
   useEffect(() => {
-    const fetchUserAvatar = async () => {
+    const fetchUserInformation = async () => {
       try {
         const response = await axiosClient.get(`/users/${task.id}/avatar`);
         setUserAvatar(response.data.avatar);
+        setUserName(response.data.name);
       } catch (error) {
         if (error.response && error.response.status === 404) {
           // L'avatar n'a pas été trouvé, nous laissons userAvatar à null
@@ -240,7 +248,7 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
 
     // Vérifier si la tâche existe avant de récupérer l'avatar
     if (tasks.find((t) => t.id === task.id)) {
-      fetchUserAvatar();
+      fetchUserInformation();
     } else {
       // Si la tâche n'existe pas, définir l'avatar sur null
       setUserAvatar(null);
@@ -297,7 +305,7 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
       >
         {" "}
       </div>
-      <p className="text-black dark:text-white" style={{ fontSize: "small" }}>
+      <p className="text-black dark:text-white " style={{ fontSize: "small" }}>
         {task.title}
       </p>
       <p className="text-sm mb-3 text-gray-500 dark:text-gray-400">
@@ -306,18 +314,12 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
       {isChef ? (
         <>
           <button
-            className="absolute top-1 right-1 text-slate-400"
-            onClick={handleTaskClick}
-          >
-            <img className="h-4 m-2" src={edittask} alt="Edit Task" />
-          </button>
-          <button
-            className="absolute bottom-[2px] right-1 text-slate-400 "
+            className="absolute bottom-[2px] right-1 text-slate-400"
             onClick={handleRemove}
           >
             <img className="h-4 m-2" src={bin} alt="icon" />
           </button>
-          {userAvatar && (
+          {userAvatar ? (
             <div className="absolute right-8 bottom-2 text-slate-400">
               <img
                 className="w-5 h-5 rounded-full"
@@ -325,26 +327,47 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks }) => {
                 alt="user avatar"
               />
             </div>
+          ) : (
+            <div className="absolute right-8 bottom-2 text-slate-400">
+              <FaUserCircle className="w-5 h-5" />{" "}
+            </div>
           )}
         </>
+      ) : userAvatar ? (
+        <div className="">
+          <img
+            className="w-5 absolute right-2 bottom-2 text-slate-400 h-5 rounded-full"
+            src={userAvatar}
+            alt="user avatar"
+          />
+        </div>
       ) : (
-        userAvatar && (
-          <div className="absolute right-3 bottom-2 text-slate-400">
-            <img
-              className="w-5 h-5 rounded-full"
-              src={userAvatar}
-              alt="user avatar"
+        <div className="absolute right-2 bottom-2 text-slate-400">
+          <FaUserCircle className="w-5 h-5" />{" "}
+        </div>
+      )}
+
+      {isChef || task.assigned_for === user.id ? (
+        <>
+          <button
+            className="absolute top-1 right-1 text-slate-400"
+            onClick={handleTaskClick}
+          >
+            <img className="h-4 m-2" src={edittask} alt="Edit Task" />
+          </button>
+
+          {edit && edit.id === task.id && (
+            <EditTask
+              task={task}
+              userName={userName}
+              userAvatar={userAvatar}
+              isChef={isChef}
+              handleCloseEdit={handleCloseEdit}
+              setTasks={setTasks}
             />
-          </div>
-        )
-      )}
-      {edit && edit.id === task.id && (
-        <EditTask
-          task={task}
-          handleCloseEdit={handleCloseEdit}
-          setTasks={setTasks}
-        />
-      )}
+          )}
+        </>
+      ) : null}
     </div>
   );
 };

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('from')->comment('own id');
             $table->unsignedBigInteger('to')->comment('other user id');
             $table->text('message');
-            $table->boolean('type');
             $table->timestamps();
         });
     }

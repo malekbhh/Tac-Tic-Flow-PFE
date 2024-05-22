@@ -9,7 +9,7 @@ class Notification extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['notification', 'user_id', 'from','to'];
+    protected $fillable = ['notification', 'from','to'];
 
     // Définir une valeur par défaut pour le champ 'from'
     protected $attributes = [

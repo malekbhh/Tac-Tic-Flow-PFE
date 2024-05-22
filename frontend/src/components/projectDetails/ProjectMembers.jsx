@@ -10,8 +10,11 @@ const ProjectMembers = ({
   updateNotifications,
   setShowMembers,
   project,
+  isChef,
   projectId,
   updateMembersList,
+  tasks,
+  setTasks,
 }) => {
   const handleRemoveMember = async (userId, memberName) => {
     try {
@@ -22,6 +25,10 @@ const ProjectMembers = ({
       const updatedMembers = members.filter((member) => member.id !== userId);
       updateMembersList(updatedMembers);
       toast.success("Member removed successfully");
+      const updatedTasks = tasks.map((task) =>
+        task.assignee === userId ? { ...task, assigneeAvatar: null } : task
+      );
+      setTasks(updatedTasks);
       sendNotificationToUser(userId);
     } catch (error) {
       console.error("Error removing member:", error);
@@ -43,6 +50,9 @@ const ProjectMembers = ({
         console.error("Erreur lors de l'envoi de la notification :", error);
       });
   };
+  if (!isChef) {
+    return null; // Si l'utilisateur n'est pas un chef, ne rien rendre
+  }
   return (
     <div
       onClick={(e) => {

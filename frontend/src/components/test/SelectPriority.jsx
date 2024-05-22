@@ -31,7 +31,7 @@ function SelectPriority({ priority, setPriority }) {
         </div>
       </div>
       {isOpen && (
-        <ul className="  absolute z-10 mt-1 w-full bg-white dark:bg-slate-900 border border-gray-300 rounded-lg shadow-lg ">
+        <ul className="  absolute z-10 mt-1 dark:text-gray-200 w-full bg-white dark:bg-slate-900 border border-gray-300 rounded-lg shadow-lg ">
           <li
             className="  items-center  hover:cursor-pointer hover:bg-black hover:bg-opacity-10 m-1 rounded-lg  flex justify-between p-2 dark:hover:bg-indigo-500 dark:hover:bg-opacity-60  "
             onClick={() => handleItemClick("low")}

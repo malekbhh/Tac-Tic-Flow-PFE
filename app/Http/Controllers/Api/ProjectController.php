@@ -14,7 +14,38 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-  
+
+public function update(Request $request, $id)
+{
+    // Validation des données envoyées dans la requête
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|string',
+        'description' => 'required|string',
+        'deadline' => 'nullable|date',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    try {
+        // Récupérer le projet à mettre à jour
+        $project = Project::findOrFail($id);
+
+        // Mettre à jour les détails du projet
+        $project->title = $request->input('title');
+        $project->description = $request->input('description');
+        $project->deadline = $request->input('deadline') ? date('Y-m-d', strtotime($request->input('deadline'))) : null;
+
+        $project->save();
+
+        return response()->json(['message' => 'Project updated successfully', 'project' => $project], 200);
+    } catch (\Exception $e) {
+        // Gérer les erreurs
+        return response()->json(['error' => 'An error occurred while updating the project'], 500);
+    }
+}
+
     public function getProjectChefAvatar($projectId)
     {
         try {
@@ -60,7 +91,6 @@ class ProjectController extends Controller
             $project = new Project();
             $project->title = $validatedData['title'];
             $project->description = $validatedData['description'];
-            $project->user_id = $user->id;
             $project->deadline = $validatedData['deadline']; // Assurez-vous que le nom du champ correspond à celui dans votre modèle Project
             $project->save();
         
@@ -74,23 +104,6 @@ class ProjectController extends Controller
             return response()->json(['error' => 'Failed to create project.'], 500);
         }
     }
-
-    // public function showProjectsWithRole(Request $request)
-    // {
-    //     $user = $request->user();
-    
-    //     // Récupérer tous les projets du chef pour l'utilisateur authentifié
-    //     $chefProjects = $user->projects()->wherePivot('user_role', 'chef')->get();
-    
-    //     // Récupérer tous les projets des membres pour l'utilisateur authentifié
-    //     $memberProjects = $user->projects()->wherePivot('user_role', '!=', 'chef')->get();
-    
-    //     // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
-    //     return response()->json([
-    //         'chefProjects' => $chefProjects,
-    //         'memberProjects' => $memberProjects
-    //     ]);
-    // }
 
     public function showProjectsWithRole(Request $request)
 {
@@ -203,6 +216,14 @@ class ProjectController extends Controller
     }
 }
 
-
+public function show($id)
+{
+    try {
+        $project = Project::findOrFail($id);
+        return response()->json($project);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Project not found'], 404);
+    }
+}
 
 }

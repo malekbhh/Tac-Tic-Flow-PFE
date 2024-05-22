@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
             $table->text('notification');
             $table->unsignedBigInteger('from')->default(0)->comment('own id');
             $table->unsignedBigInteger('to')->default(0)->comment('other user id');

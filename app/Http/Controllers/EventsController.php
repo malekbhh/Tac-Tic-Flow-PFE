@@ -12,19 +12,20 @@ class EventsController extends Controller
     public function store(Request $request)
     {
         try {
-            $user_id = Auth::id(); // Récupérer l'ID de l'utilisateur authentifié
+            $user_id = Auth::id();
             $event = new Event();
             $event->title = $request->input('title');
             $event->start = $request->input('start');
-            $event->user_id = $user_id; // Associer l'ID de l'utilisateur à l'événement
+            $event->end = $request->input('end', null); // Valeur par défaut de fin à null si non fournie
+            $event->user_id = $user_id;
             $event->save();
-    
+
             error_log('Event created successfully: ' . $event->title);
             
-            return response()->json(['success' => true, 'event' => $event]); // Retourner l'événement créé dans la réponse
+            return response()->json(['success' => true, 'event' => $event]);
         } catch (\Exception $e) {
             error_log('Error creating event: ' . $e->getMessage());
-    
+
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }

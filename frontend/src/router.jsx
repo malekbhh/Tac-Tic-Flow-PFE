@@ -6,6 +6,7 @@ import NotFound from "./views/NotFound";
 import Signup from "./views/Signup";
 import User from "./views/User";
 import Home from "./views/Home.jsx";
+
 import ResetPassword from "./views/ResetPassword.jsx";
 import Projects from "./components/Projects.jsx";
 import UserAdmin from "./views/UserAdmin/UsersAdmin.jsx";
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
+
   // {
   //   path: "dash",
   //   element: <Dashboardd1 />,

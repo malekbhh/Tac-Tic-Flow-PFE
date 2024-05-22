@@ -1,28 +1,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 function NewPassword({ email }) {
   return (
-    <div className="flex flex-col px-8 pt-4 w-90 rounded-2xl items-center justify-center">
-      <div className="z-10 flex overflow-hidden justify-center items-center">
-        <div className="pt-4 pb-4 h-full w-90 rounded-2xl flex flex-col gap-1 items-center justify-center">
-          <img className="h-16" src="/logo2.png" alt="logo" />
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-blue-950 mt-2 font-semibold">
-              Veuillez vérifier votre e-mail pour le nouveau mot de passe.
-            </p>
-            <span className=" text-blue-950 text-xs font-semibold mb-2 block w-full max-w-xs">
-              Un nouveau mot de passe a été envoyé à votre adresse e-mail :{" "}
-              {email}
-            </span>
-            <Link
-              to="/login"
-              className="h-8 w-24 pb-1 mt-8 bg-[#212177]  text-white flex items-center justify-center font-medium rounded-xl"
-            >
-              Login
-            </Link>
-          </div>
-        </div>
-      </div>{" "}
+    <div className="w-[300px] py-6 flex flex-col items-center justify-center pt-4 pb-8 shadow-lg rounded-2xl bg-white bg-opacity-10">
+      <img className="h-16 " src="/logo2.png" alt="logo" />
+      <div className="  text-center">
+        <h2 className="text-2xl font-bold mt-4 text-gray-300 mb-4">
+          Check Your Email
+        </h2>
+        <p className=" text-gray-800 mb-4">
+          A new password has been sent to your email address:{" "}
+          <strong>{email}</strong>
+        </p>
+        <Link
+          to="/login"
+          className="mt-4 h-10 w-28 font-medium  inline-block bg-midnightblue text-white py-2 px-4 rounded-xl transition duration-300 hover:shadow-lg"
+        >
+          Login
+        </Link>
+      </div>
     </div>
   );
 }

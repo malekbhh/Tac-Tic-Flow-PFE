@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Membership;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Task;
 
 class MembershipController extends Controller
 {
@@ -56,16 +57,17 @@ class MembershipController extends Controller
          Membership::where('project_id', $projectId)
                   ->where('user_id', $userId)
                   ->delete();
-
-         // Retourner une réponse indiquant que le membre a été supprimé avec succès
-         return response()->json(['message' => 'Member removed from project successfully'], 200);
-       } catch (\Exception $e) {
-        // Gérer les erreurs
-        return response()->json(['error' => 'Failed to remove member from project'], 500);
+                  Task::where('project_id', $projectId)
+                  ->where('assigned_for', $userId)
+                  ->update(['assigned_for' => null]);
+      
+              // Retourner une réponse indiquant que le membre a été supprimé avec succès
+              return response()->json(['message' => 'Member removed from project successfully'], 200);
+          } catch (\Exception $e) {
+              // Gérer les erreurs
+              return response()->json(['error' => 'Failed to remove member from project'], 500);
+          }
       }
- }
-    
-
   
 //Progress  fasakh ama veriife kbal
 public function getProjectMembers($projectId)

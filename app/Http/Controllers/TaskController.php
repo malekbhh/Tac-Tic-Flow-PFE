@@ -1,105 +1,54 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 use App\Models\Project;
+
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator; 
 use App\Models\Membership;
-use Illuminate\Support\Facades\Log;
-use App\Models\Fichier;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Models\Link; // Remplacer Fichier par Link
 
-use Illuminate\Support\Facades\Response;
-
-use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
-{
-    
+{   
+   
+    public function addLinkUrl(Request $request, $taskId)
+    {
+        $validatedData = $request->validate([
+            'linkUrl' => 'required|url',
+        ]);
 
-    public function download(Request $request)
-    {
-        try {
-            $fileName = $request->input('filename');
-            $filePath = public_path($fileName);
-    
-            // Vérifier si le fichier existe
-            if (!file_exists($filePath)) {
-                return response()->json(['error' => 'File not found.'], 404);
-            }
-    
-            // Télécharger le fichier avec le type de contenu approprié
-            return Response::download($filePath, basename($filePath), [], 'inline'); // Utilisez 'inline' pour afficher directement le contenu dans le navigateur
-        } catch (\Exception $e) {
-            Log::error('Failed to download file: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to download file.'], 500);
-        }
-    }
-    
+        $link = new Link();
+        $link->task_id = $taskId;
+        $link->url = $validatedData['linkUrl'];
+        $link->save();
 
-    public function uploadAttachment(Request $request, $id)
-    {
-        try {
-            $task = Task::findOrFail($id);
-    
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-    
-                // Valider que le fichier est une image
-                if (!$file->isValid() || !in_array($file->getClientOriginalExtension(), ['jpg', 'jpeg', 'png', 'gif'])) {
-                    return response()->json(['error' => 'Invalid file. Please upload an image file.'], 400);
-                }
-    
-                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-                $filePath = $file->storeAs('uploads', $filename);
-    
-                $attachment = Fichier::create([
-                    'task_id' => $task->id,
-                    'name' => $filename, // Stocker le nom du fichier seulement
-                ]);
-    
-                return response()->json(['success' => true, 'file' => $attachment]);
-            } else {
-                return response()->json(['error' => 'No file uploaded.'], 400);
-            }
-        } catch (\Exception $e) {
-            Log::error('Failed to upload attachment: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to upload attachment.'], 500);
-        }
+        return response()->json(['link' => $link]);
     }
-    
-    
-    public function updateTask(Request $request, $id)
+
+    public function getTaskLinks($taskId)
     {
-        try {
-            $task = Task::findOrFail($id);
-            if ($request->has('title')) {
-                $task->title = $request->title;
-            }
-            if ($request->has('due_date')) {
-                $dueDate = \Carbon\Carbon::parse($request->due_date)->toDateString();
-                $task->due_date = $dueDate;
-            }
-            if ($request->has('priority')) {
-                $task->priority = $request->priority;
-            }
-            $task->save();
-            $updatedTask = Task::find($task->id);
-            return response()->json(['success' => true, 'task' => $updatedTask]);
-        } catch (\Exception $e) {
-            Log::error('Failed to update task: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to update task.'], 500);
-        }
+        $links = Link::where('task_id', $taskId)->get();
+        return response()->json(['links' => $links]);
+    }
+   public function deleteLink($linkId)
+    {
+        $link = Link::findOrFail($linkId);
+        $link->delete();
+
+        return response()->json(['message' => 'Link deleted successfully'], 200);
     }
 
     
-    
-    //
+
     public function createTask(Request $request, $projectId)
     {
         // Validation des données d'entrée
@@ -149,7 +98,7 @@ class TaskController extends Controller
      
     public function getTasksByProjectId($projectId)
     {
-     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status','user_id','priority']); // Ajoutez 'due_date' à la sélection
+     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status','assigned_for','priority']); // Ajoutez 'due_date' à la sélection
      return response()->json($tasks);
     }
        
@@ -157,7 +106,7 @@ class TaskController extends Controller
     {
         try {
             $task = Task::where('project_id', $projectId)->findOrFail($taskId);
-            $task->user_id = $request->user_id;
+            $task->assigned_for = $request->user_id;
             $task->save();
             
             return response()->json(['message' => 'Task assigned successfully'], 200);
@@ -175,7 +124,7 @@ class TaskController extends Controller
     
             // Vérifier si l'utilisateur existe et s'il a les autorisations nécessaires
             $task = Task::findOrFail($taskId);
-            if ($user && ($task->user_id === $user->id || $isChef)) {
+            if ($user && ($task->assigned_for=== $user->id || $isChef)) {
                 // L'utilisateur est autorisé à déplacer cette tâche
                 return response()->json(['canDrop' => true], 200);
             } else {
@@ -217,7 +166,7 @@ class TaskController extends Controller
           $userId = auth()->id();
 
           $tasks = Task::where('project_id', $projectId)
-          ->where('user_id', $userId)
+          ->where('assigned_for', $userId)
           ->get();
     
           return response()->json($tasks);
@@ -231,7 +180,7 @@ class TaskController extends Controller
         try {
             // Récupérer les tâches du membre spécifié dans le projet spécifié
             $tasks = Task::where('project_id', $projectId)
-                         ->where('user_id', $memberId)
+                         ->where('assigned_for', $memberId)
                          ->get();
     
             return response()->json($tasks);
@@ -239,9 +188,95 @@ class TaskController extends Controller
             return response()->json(['error' => 'Failed to retrieve tasks by project and member ID.'], 500);
         }
     }
+    public function getTaskFiles($taskId)
+    {
+        $task = Task::find($taskId);
+    
+        if (!$task) {
+            return response()->json(['message' => 'Task not found.'], 404);
+        }
+    
+        $files = $task->fichiers; // Utilisez la relation "fichiers" définie dans votre modèle Task
+        return response()->json(['files' => $files], 200);
+    }
+    
+    public function deleteTaskFile($fileId)
+    {
+        try {
+            $file = Fichier::findOrFail($fileId);
+            $file->delete();
+    
+            return response()->json(['message' => 'File deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete file'], 500);
+        }
+    }
+    public function removeMemberFromTask(Request $request, $taskId)
+    {
+        try {
+            $task = Task::findOrFail($taskId);
+            if ($task->assigned_for !== null) {
+                $task->assigned_for = null;
+                $task->save();
+
+                return response()->json(['message' => 'Member removed successfully', 'task' => $task], 200);
+            } else {
+                return response()->json(['message' => 'Task is already unassigned'], 200);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to remove member from task: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to remove member from task.'], 500);
+        }
+    }
+
 
 
     
-  
-}    
+    
+   
+    public function updateTask(Request $request, $id)
+    {
+        try {
+            $task = Task::findOrFail($id);
+    
+            // Mise à jour des champs title, due_date et priority si présents dans la requête
+            if ($request->has('title')) {
+                $task->title = $request->input('title');
+            }
+            if ($request->has('due_date')) {
+                $task->due_date = $request->input('due_date');
+            }
+            if ($request->has('priority')) {
+                $task->priority = $request->input('priority');
+            }
+    
+            // Sauvegarde de la tâche
+            $task->save();
+    
+            // Gestion des fichiers attachés s'ils sont présents dans la requête
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $filePath = $file->store('attachments');
+                $task->files()->create(['name' => basename($filePath), 'path' => $filePath]);
+            }
+    
+            return response()->json(['task' => $task], 200);
+        } catch (\Exception $e) {
+            Log::error('Failed to update task: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to update task.'], 500);
+        }
+    }
+ 
 
+ 
+    public function deleteFile($taskId, $fileId)
+    {
+        $task = Task::findOrFail($taskId);
+        $file = $task->files()->findOrFail($fileId);
+
+        Storage::delete($file->path);
+        $file->delete();
+
+        return response()->json(['message' => 'File deleted'], 200);
+    }
+}

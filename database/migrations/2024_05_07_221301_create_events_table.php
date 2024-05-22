@@ -17,7 +17,7 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->dateTime('start');
+            $table->dateTime('start')->default(now()); // Définir une valeur par défaut pour le champ 'start'
             $table->dateTime('end')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 

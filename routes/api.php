@@ -34,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
    Route::get('projects/{projectId}/members', [ProjectController::class, 'showMembers']);
    Route::get('/projects/{projectId}/chef/avatar', [ProjectController::class, 'getProjectChefAvatar']);
+   Route::put('/projects/{id}', [ProjectController::class, 'update']);
+   Route::get('/projects/{id}', [ProjectController::class, 'show']);
 
    Route::get('/usersNotMembers', [UserController::class, 'usersNotMembers']);
    Route::post('/add-member-to-project', [MembershipController::class, 'addMemberToProject']);
@@ -52,13 +54,17 @@ Route::middleware('auth:sanctum')->group(function () {
    Route::get('/memberships/{projectId}', [MembershipController::class, 'getProjectMembers']);
    Route::get('/tasks/project/{projectId}/member/{memberId}', [TaskController::class, 'getTasksByProjectAndMember']);
    Route::post('/tasksUpdate/{id}', [TaskController::class, 'updateTask']);
+   Route::post('/tasks/{id}/upload',  [TaskController::class, 'uploadAttachment']);
 
+   Route::get('/download-file', [TaskController::class, 'downloadFile'])->name('downloadFile');
+   
    Route::post('/check-user-role', [MembershipController::class, 'checkUserRoleForProject']);
 //photo
-Route::post('/tasks/{id}/upload',  [TaskController::class, 'uploadAttachment']);
-Route::get('/download-file', [TaskController::class, 'downloadFile'])->name('downloadFile');
 Route::get('/download', [TaskController::class, 'download']);
-
+// Task routes
+Route::post('/tasks/{taskId}/add-link-url', [TaskController::class, 'addLinkUrl']);
+Route::get('/tasks/{taskId}/links', [TaskController::class, 'getTaskLinks']);
+Route::delete('/links/{linkId}', [TaskController::class, 'deleteLink']);
   //pour user 
   Route::get('/usersAccount', [UserController::class, 'indexUsers']);
   Route::post('/usersAccount', [UserController::class, 'storee']);
@@ -78,6 +84,9 @@ Route::get('/download', [TaskController::class, 'download']);
 
   // Endpoint pour envoyer une notification à un utilisateur
   Route::post('/send-notification', [NotificationController::class, 'sendMessage']);
+
+  Route::put('/tasks/{id}/remove-member', [TaskController::class, 'removeMemberFromTask']);
+
 
 
   //calendar
