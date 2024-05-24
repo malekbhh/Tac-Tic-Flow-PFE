@@ -305,9 +305,12 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks, user }) => {
       >
         {" "}
       </div>
-      <p className="text-black dark:text-white " style={{ fontSize: "small" }}>
+      <p
+        className="text-gray-800 font-semibold mt-1 dark:text-gray-300 "
+        style={{ fontSize: "small" }}
+      >
         {task.title}
-      </p>
+      </p>{" "}
       <p className="text-sm mb-3 text-gray-500 dark:text-gray-400">
         {task.due_date}
       </p>
@@ -319,34 +322,43 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks, user }) => {
           >
             <img className="h-4 m-2" src={bin} alt="icon" />
           </button>
-          {userAvatar ? (
-            <div className="absolute right-8 bottom-2 text-slate-400">
-              <img
-                className="w-5 h-5 rounded-full"
-                src={userAvatar}
-                alt="user avatar"
-              />
-            </div>
-          ) : (
-            <div className="absolute right-8 bottom-2 text-slate-400">
-              <FaUserCircle className="w-5 h-5" />{" "}
+          <div className="">
+            {userName && (
+              <div className="">
+                {userAvatar ? (
+                  <img
+                    className="w-5 absolute right-8 bottom-2 text-slate-400 h-5 rounded-full"
+                    src={userAvatar}
+                    alt="user avatar"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-300">
+                    <FaUserCircle className="w-5 absolute right-8 bottom-2 text-slate-400 h-5 rounded-full" />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          {userName && (
+            <div className="">
+              {userAvatar ? (
+                <img
+                  className="w-5 absolute right-2 bottom-2 text-slate-400 h-5 rounded-full"
+                  src={userAvatar}
+                  alt="user avatar"
+                />
+              ) : (
+                <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-300">
+                  <FaUserCircle className="w-5 absolute right-2 bottom-2 text-slate-400 h-5 rounded-full" />
+                </div>
+              )}
             </div>
           )}
         </>
-      ) : userAvatar ? (
-        <div className="">
-          <img
-            className="w-5 absolute right-2 bottom-2 text-slate-400 h-5 rounded-full"
-            src={userAvatar}
-            alt="user avatar"
-          />
-        </div>
-      ) : (
-        <div className="absolute right-2 bottom-2 text-slate-400">
-          <FaUserCircle className="w-5 h-5" />{" "}
-        </div>
       )}
-
       {isChef || task.assigned_for === user.id ? (
         <>
           <button

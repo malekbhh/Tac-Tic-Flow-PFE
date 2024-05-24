@@ -11,7 +11,7 @@ import { useLocation } from "react-router-dom";
 // import { useStateContext } from "../context/ContextProvider.jsx";
 const ProjectDetails = () => {
   const location = useLocation();
-  const { projectId, project, isChef } = location.state;
+  const { projectId, project, isChef, chefAvatar } = location.state;
   const [tasks, setTasks] = useState([]);
   const [showMembers, setShowMembers] = useState(false);
   const [members, setMembers] = useState([]);
@@ -19,6 +19,42 @@ const ProjectDetails = () => {
   const { notifications, user } = useStateContext();
   const [loading, setLoading] = useState(false);
   const [isDropSelectdownOpen, setDropSelectdownOpen] = useState(false);
+  const [filterType, setFilterType] = useState("all");
+
+  // Définissez une fonction pour changer le type de filtre
+  // Définissez une fonction pour changer le type de filtre
+  const handleFilterChange = (filter) => {
+    console.log("Filter changed to:", filter);
+    setFilterType(filter);
+  };
+
+  // Filtrer les tâches en fonction du type de filtre sélectionné
+  const filteredTasks = tasks.filter((task) => {
+    if (filterType === "all") {
+      return true; // Afficher toutes les tâches
+    } else if (filterType === "overdue") {
+      const dueDate = new Date(task.due_date);
+      if (!isNaN(dueDate)) {
+        return dueDate < new Date(); // Filtrer les tâches en retard
+      } else {
+        console.error("Invalid due date for task:", task);
+        return false; // Ignorer les tâches avec des dates invalides
+      }
+    } else if (filterType === "nextDay") {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const dueDate = new Date(task.due_date);
+      if (!isNaN(dueDate)) {
+        return dueDate > tomorrow; // Filtrer les tâches dues dans les prochains jours
+      } else {
+        console.error("Invalid due date for task:", task);
+        return false; // Ignorer les tâches avec des dates invalides
+      }
+    }
+  });
+
+  console.log("Filtered tasks:", filteredTasks); // Ajouter cette ligne pour vérifier les tâches filtrées
+
   const updateMembersList = (updatedMembers) => {
     setMembers(updatedMembers);
   };
@@ -77,10 +113,13 @@ const ProjectDetails = () => {
             setDropSelectdownOpen={setDropSelectdownOpen}
             isChef={isChef}
             tasks={tasks}
+            onFilterChange={handleFilterChange}
             setTasks={setTasks}
             setSearchValue={setSearchValue}
+            filterType={filterType}
             projectId={projectId}
-            onMemberAdded={handleMemberAdded} // Passer la fonction de rappel ici
+            onMemberAdded={handleMemberAdded}
+            chefAvatar={chefAvatar} // Passer la fonction de rappel ici
           />
         )}
 
@@ -101,7 +140,7 @@ const ProjectDetails = () => {
           <ListTasks
             isChef={isChef}
             projectId={projectId}
-            tasks={tasks}
+            tasks={filteredTasks}
             searchValue={searchValue}
             user={user}
             project={project}

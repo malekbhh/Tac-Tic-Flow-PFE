@@ -56,13 +56,13 @@ class TaskController extends Controller
             'title' => 'required|string',
             'dueDate' => 'nullable|date',
             'priority' => 'required|string|in:low,medium,high', // Add validation for priority
-
+            'description' => 'nullable|string', // Add validation for description
         ]);
- 
+    
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
- 
+    
         try {
             // Création de la tâche
             $task = new Task();
@@ -70,20 +70,25 @@ class TaskController extends Controller
             $task->project_id = $projectId;
             $task->status = 'To Do';
             $task->priority = $request->priority; // Set priority
-
             $task->due_date = $request->dueDate;
+    
+            // Enregistrer la description uniquement si elle est présente dans la requête et n'est pas null
+            if ($request->has('description') && $request->input('description') !== null) {
+                $task->description = $request->input('description');
+            }
+    
             $task->save();
- 
+    
             return response()->json($task, 201);
         } catch (QueryException $e) {
             // Enregistrement de l'erreur dans les logs
             Log::error('Failed to create task: ' . $e->getMessage());
- 
+    
             // Réponse d'erreur
             return response()->json(['error' => 'Failed to create task.'], 500);
         }
     }
- 
+    
     public function deleteTask($taskId)
     {
         try {
@@ -98,7 +103,8 @@ class TaskController extends Controller
      
     public function getTasksByProjectId($projectId)
     {
-     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status','assigned_for','priority']); // Ajoutez 'due_date' à la sélection
+     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status', 'assigned_for', 'priority', 'description']); // Inclure la description
+
      return response()->json($tasks);
     }
        
@@ -250,6 +256,9 @@ class TaskController extends Controller
                 $task->priority = $request->input('priority');
             }
     
+            if ($request->has('description')) {
+                    $task->description = $request->input('description');
+                }
             // Sauvegarde de la tâche
             $task->save();
     

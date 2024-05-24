@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios-client.js";
-import search from "../assets/search.png";
 import toast from "react-hot-toast";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import { useNavigate } from "react-router-dom";
@@ -8,14 +7,10 @@ import { Button } from "antd";
 import { DeleteOutlined, UserOutlined, EditOutlined } from "@ant-design/icons";
 import EditProject from "./Project/EditProject.jsx"; // Importez le composant EditProject
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSearch,
-  faSpinner,
-  faFilter,
-  faCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import crown2 from "../assets/crown2.png";
+import { faSearch, faFilter, faCheck } from "@fortawesome/free-solid-svg-icons";
 const Projects = ({}) => {
-  const { chefProjects, setChefProjects } = useStateContext();
+  const { chefProjects, setChefProjects, notifications } = useStateContext();
   const [memberProjects, setMemberProjects] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [filteredChefProjects, setFilteredChefProjects] = useState([]);
@@ -30,6 +25,13 @@ const Projects = ({}) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (filteredMemberProjects.length > 0) {
+      const firstProject = filteredMemberProjects[0]; // Sélectionner le premier projet membre
+      setSelectedChefAvatar(firstProject.chef_avatar); // Mettre à jour l'avatar du chef
+      setSelectedChefName(firstProject.chef_name); // Mettre à jour le nom du chef
+    }
+  }, [filteredMemberProjects]);
   const handleProjectUpdate = (updatedProject) => {
     setChefProjects((prevProjects) =>
       prevProjects.map((project) =>
@@ -39,12 +41,25 @@ const Projects = ({}) => {
   };
 
   const handleClick = (projectId, project) => {
+    // Vérifie si le projet est dans la liste chefProjects
     const isChef = chefProjects.some((p) => p.id === projectId);
+
+    // Trouvez l'avatar du chef pour ce projet
+    let chefAvatar = null;
+    if (isChef) {
+      const chefProject = chefProjects.find((p) => p.id === projectId);
+      chefAvatar = chefProject.chef_avatar;
+    } else {
+      const memberProject = memberProjects.find((p) => p.id === projectId);
+      chefAvatar = memberProject.chef_avatar;
+    }
+
     navigate("/ProjectDetails", {
       state: {
         projectId,
         project,
         isChef,
+        chefAvatar,
       },
     });
   };
@@ -99,7 +114,7 @@ const Projects = ({}) => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [notifications]);
 
   useEffect(() => {
     setFilteredChefProjects(chefProjects);
@@ -232,7 +247,7 @@ const Projects = ({}) => {
             {roleFilter !== "member" && (
               <>
                 <h3 className="text-gray-800 dark:text-white font-semibold text-xl mb-4">
-                  Projects
+                  Projects You Own
                 </h3>
                 <div className="flex w-full gap-11 flex-wrap">
                   {!filteredChefProjects || !filteredChefProjects.length ? (
@@ -251,6 +266,7 @@ const Projects = ({}) => {
                                 </h2>
                               </button>
                               <Button
+                                className="text-gray-800 dark:text-gray-300"
                                 type="text"
                                 icon={<EditOutlined />}
                                 onClick={() => handleEditProject(project.id)}
@@ -293,7 +309,11 @@ const Projects = ({}) => {
                 </h3>
                 <div className="flex w-full gap-11 flex-wrap">
                   {!filteredMemberProjects || !filteredMemberProjects.length ? (
-                    <p className="ml-4">No projects found.</p>
+                    <p className="ml-4">
+                      {" "}
+                      You have not received an invitation to take part in any
+                      projects.
+                    </p>
                   ) : (
                     filteredMemberProjects.map((project) => (
                       <div key={project.id} className="mb-4 w-72">
@@ -321,8 +341,34 @@ const Projects = ({}) => {
                                 ).toLocaleDateString()}
                               </p>
                             )}
+                            <img
+                              className="h-6 absolute bottom-10 right-[15px] z-20 "
+                              src={crown2}
+                              alt="crownicon"
+                            />
+
+                            <div className="flex translate-y-5  justify-end p-4  translate-x-4">
+                              <span
+                                className="text-gray-600 dark:text-gray-300 "
+                                style={{ fontSize: "small" }}
+                              ></span>{" "}
+                              {project.chef_avatar ? (
+                                <div>
+                                  <img
+                                    src={project.chef_avatar}
+                                    className="w-7 h-7 rounded-full"
+                                    alt="Chef Avatar"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="bg-gray-200 text-gray-800 rounded-full w-7 h-7 flex justify-center items-center">
+                                  {" "}
+                                  <UserOutlined />
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex justify-end p-4 space-x-2">
+                          {/* <div className="flex justify-end p-4 space-x-2">
                             {selectedChefAvatar ? (
                               <img
                                 src={selectedChefAvatar}
@@ -332,7 +378,7 @@ const Projects = ({}) => {
                             ) : (
                               <Button type="text" icon={<UserOutlined />} />
                             )}
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     ))

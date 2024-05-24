@@ -6,6 +6,8 @@ import close from "../../assets/close.png";
 import adduser from "../../assets/adduser.png";
 import axiosClient from "../../axios-client"; // Importez votre client Axios
 import AddMemberTask from "./AddMemberTask";
+import crown2 from "../../assets/crown2.png";
+
 const ProjectHeader = ({
   project,
   members,
@@ -18,11 +20,17 @@ const ProjectHeader = ({
   onMemberAdded,
   setDropSelectdownOpen,
   isDropSelectdownOpen,
+  onFilterChange,
+  filterType,
+  chefAvatar, // Ajoutez la fonction pour changer le type de filtre
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
   const [showTable, setShowTable] = useState(false);
-
+  // Fonction pour changer le type de filtre et mettre à jour les tâches
+  const handleFilterChange = (filter) => {
+    onFilterChange(filter);
+  };
   const toggleTable = () => {
     setShowTable(!showTable);
   };
@@ -88,14 +96,32 @@ const ProjectHeader = ({
       });
   };
   return (
-    <div className="dark:text-white  dark:bg-black dark:bg-opacity-30  w-[1240px] px-4 flex items-center justify-between  rounded-xl h-14 bg-opacity-25 bg-white  text-midnightblue">
+    <div className="dark:text-white py-1  dark:bg-black dark:bg-opacity-30  w-[1240px] px-4 flex items-center justify-between  rounded-xl h-14 bg-opacity-25 bg-white  text-midnightblue">
       <div className="flex gap-8">
-        <h2 className="text-xl dark:text-gray-300 font-semibold">
+        <h2 className="text-xl flex justify-center items-center dark:text-gray-300 font-semibold">
           {project.title}
         </h2>
+        <div className="flex flex-col  justify-center items-center ">
+          <img className="h-5    z-20 " src={crown2} alt="crownicon" />
+
+          {chefAvatar ? (
+            <div>
+              <img
+                src={chefAvatar}
+                className="w-1 h-1 rounded-full"
+                alt="Chef Avatar"
+              />
+            </div>
+          ) : (
+            <div className="bg-gray-200 text-gray-800 rounded-full w-7 h-7 flex justify-center items-center">
+              {" "}
+              <UserOutlined />
+            </div>
+          )}
+        </div>
         <div
           onClick={toggleMembers}
-          className="flex hover:cursor-pointer items-center gap-2"
+          className="flex justify-center hover:cursor-pointer items-center gap-2"
         >
           {members.map((member, index) =>
             member.avatar ? (
@@ -139,29 +165,41 @@ const ProjectHeader = ({
             } text-base list-none bg-opacity-25 bg-white px-1 rounded-xl rounded-t-none shadow dark:bg-black dark:bg-opacity-30 dark:divide-gray-600`}
           >
             <ul className="py-1">
-              <li className="flex px-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white rounded-lg items-center">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+              <li
+                className={`flex px-2 ${
+                  filterType === "all" ? "bg-gray-100" : ""
+                } hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white rounded-lg items-center`}
+              >
+                <button
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white"
+                  onClick={() => handleFilterChange("all")}
+                >
+                  All Tasks
+                </button>
+              </li>
+              <li
+                className={`flex px-2 ${
+                  filterType === "overdue" ? "bg-gray-100" : ""
+                } hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white rounded-lg items-center`}
+              >
+                <button
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white"
+                  onClick={() => handleFilterChange("overdue")}
                 >
                   Overdue
-                </a>
+                </button>
               </li>
-              <li className="flex px-2  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white rounded-lg items-center">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+              <li
+                className={`flex px-2 ${
+                  filterType === "nextDay" ? "bg-gray-100" : ""
+                } hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white rounded-lg items-center`}
+              >
+                <button
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white"
+                  onClick={() => handleFilterChange("nextDay")}
                 >
                   Due in the next day
-                </a>
-              </li>
-              <li className="flex px-2 justify-between  hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white rounded-lg items-center">
-                <input
-                  onClick={handleDropdownSelect}
-                  className="block px-4 bg-transparent placeholder:text-gray-700 dark:placeholder:text-gray-300 focus:outline-none py-2 text-sm text-gray-700 dark:text-gray-300 "
-                  placeholder="Select members"
-                />
-                <button></button>
+                </button>
               </li>
             </ul>
           </div>

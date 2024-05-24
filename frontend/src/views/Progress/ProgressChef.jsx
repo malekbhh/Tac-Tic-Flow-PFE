@@ -63,50 +63,67 @@ function ProgressChef({ projectId }) {
           </div>
         </div>
       </div>
-      {membersWithTasks.map((member, index) => (
-        <div className="w-full" key={member.id}>
-          <div className="bg-white dark:bg-black dark:bg-opacity-25 bg-opacity-30 w-full rounded-xl p-6 shadow-md h-full max-h-[500px] flex flex-col">
-            <div className="flex w-full items-center gap-4">
-              {member.avatar ? (
-                <img
-                  className="rounded-full h-16 w-16"
-                  src={member.avatar}
-                  alt={member.name}
-                />
+      {membersWithTasks.length > 0 ? (
+        membersWithTasks.map((member, index) => (
+          <div className="w-full" key={member.id}>
+            <div className="bg-white dark:bg-black dark:bg-opacity-25 bg-opacity-30 w-full rounded-xl p-6 shadow-md h-full max-h-[500px] flex flex-col">
+              <div className="flex w-full items-center gap-4">
+                {member.avatar ? (
+                  <img
+                    className="rounded-full h-16 w-16"
+                    src={member.avatar}
+                    alt={member.name}
+                  />
+                ) : (
+                  <FaUser className="rounded-full h-16 w-16 text-gray-500" />
+                )}
+                <p className="font-semibold text-lg">{member.name}</p>
+              </div>
+              <div className="mt-4">
+                <TaskBarChart taskProgress={member.taskProgress} />
+              </div>
+              {member.tasks.length > 0 ? (
+                <div className="overflow-y-auto mt-4">
+                  <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
+                    <thead className="bg-gray-100 dark:bg-black bg-opacity-30 dark:bg-opacity-30">
+                      <tr>
+                        <th className="py-2 px-4 text-left">Title</th>
+                        <th className="py-2 px-4 text-left">Deadline</th>
+                        <th className="py-2 px-4 text-left">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {member.tasks.map((task) => (
+                        <tr
+                          key={task.id}
+                          className="hover:bg-gray-50 dark:hover:bg-black hover:bg-opacity-30 dark:hover:bg-opacity-30"
+                        >
+                          <td className="py-3 px-4">{task.title}</td>
+                          <td className="py-3 px-4">{task.due_date}</td>
+                          <td className="py-3 px-4">{task.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
-                <FaUser className="rounded-full h-16 w-16 text-gray-500" />
+                <div className="flex justify-center items-center">
+                  <p className="mt-4 text-gray-500 dark:text-gray-400">
+                    No tasks assigned for this member.
+                  </p>
+                </div>
               )}
-              <p className="font-semibold text-lg">{member.name}</p>
-            </div>
-            <div className="mt-4">
-              <TaskBarChart taskProgress={member.taskProgress} />
-            </div>
-            <div className="overflow-y-auto mt-4">
-              <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
-                <thead className="bg-gray-100 dark:bg-black bg-opacity-30 dark:bg-opacity-30">
-                  <tr>
-                    <th className="py-2 px-4 text-left">Title</th>
-                    <th className="py-2 px-4 text-left">Deadline</th>
-                    <th className="py-2 px-4 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {member.tasks.map((task) => (
-                    <tr
-                      key={task.id}
-                      className="hover:bg-gray-50 dark:hover:bg-black hover:bg-opacity-30 dark:hover:bg-opacity-30"
-                    >
-                      <td className="py-3 px-4">{task.title}</td>
-                      <td className="py-3 px-4">{task.due_date}</td>
-                      <td className="py-3 px-4">{task.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
+        ))
+      ) : (
+        <div className="flex justify-center items-center">
+          {" "}
+          <p className="text-gray-500  dark:text-gray-400">
+            No members with tasks found.
+          </p>
         </div>
-      ))}
+      )}
     </div>
   );
 }

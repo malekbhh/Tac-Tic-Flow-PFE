@@ -20,6 +20,8 @@ function EditTask({
   const [priority, setPriority] = useState(task.priority);
   const [linkUrl, setLinkUrl] = useState("");
   const [taskLinks, setTaskLinks] = useState([]);
+  const [editedDescription, setEditedDescription] = useState(task.description);
+
   const handleRemoveMember = async () => {
     try {
       const response = await axiosClient.put(`/tasks/${task.id}/remove-member`);
@@ -78,6 +80,9 @@ function EditTask({
 
       if (priority !== task.priority) {
         formData.append("priority", priority);
+      }
+      if (editedDescription !== task.description) {
+        formData.append("description", editedDescription);
       }
 
       const response = await axiosClient.post(
@@ -159,11 +164,8 @@ function EditTask({
         {isChef ? (
           <>
             <form onSubmit={handleEditTask} className="flex flex-col gap-4">
-              <div className="relative">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
+              <div className="text-gray-700 dark:text-gray-300">
+                <label htmlFor="title" className="block text-sm font-medium ">
                   Title
                 </label>
                 <input
@@ -173,6 +175,21 @@ function EditTask({
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
                   placeholder="Enter title"
+                />
+              </div>
+              <div className="text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium "
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  className="mt-1 p-2 block w-full shadow-sm sm:text-sm dark:bg-transparent dark:border-b border-gray-300 rounded-md"
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  placeholder="Enter description"
                 />
               </div>
               <div>
@@ -227,7 +244,6 @@ function EditTask({
                 Deadline: {task.due_date}
               </p>
               <div className="flex justify-center items-center gap-2">
-                {" "}
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Priority: {task.priority}
                 </p>
@@ -241,6 +257,12 @@ function EditTask({
                   } border border-gray-300`}
                 ></span>
               </div>
+              <p
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                style={{ maxWidth: "300px", wordWrap: "break-word" }}
+              >
+                Description: {task.description}
+              </p>
             </div>
 
             <form onSubmit={handleLinkUrlSubmit} className="mt-4 space-y-4">
@@ -333,7 +355,7 @@ function EditTask({
                     Remove {userName}
                   </button>
                 ) : (
-                  <p className="text-red-500 mt-2 font-bold pl-4">{userName}</p>
+                  <p className="text-red-500  font-bold pl-4">{userName}</p>
                 )}
               </div>
             ) : (
