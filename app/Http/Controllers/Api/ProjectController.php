@@ -134,45 +134,46 @@ public function update(Request $request, $id)
 
     public function destroy(Project $project)
     {
-        // Assurez-vous que le projet appartient à l'utilisateur authentifié
-        if ($project->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-
+      
         // Supprimez le projet de la base de données
         $project->delete();
 
         // Répondre avec un statut de succès
         return response()->json(['message' => 'Projet supprimé avec succès']);
     }
-
     public function showMembers($projectId)
     {
         try {
-            // Récupérer le projet avec ses membres
-            $project = Project::with('users')->findOrFail($projectId);
-            
-            // Collecter les détails des membres avec leurs avatars, en excluant l'utilisateur authentifié
-            $members = [];
-            foreach ($project->users as $user) {
-                if ($user->id !== auth()->id()) { // Exclure l'utilisateur authentifié
+            // Récupérer tous les utilisateurs ayant un rôle de membre pour le projet spécifié
+            $members = User::join('memberships', 'users.id', '=', 'memberships.user_id')
+                ->where('memberships.project_id', $projectId)
+                ->where('memberships.user_role', 'member')
+                ->select('users.id', 'users.name', 'users.email', 'users.avatar')
+                ->get()
+                ->map(function ($user) {
+                    // Ajouter la logique pour récupérer l'URL de l'avatar
                     $avatarUrl = $user->avatar ? asset('storage/avatars/' . $user->avatar) : null;
-                    $members[] = [
+    
+                    // Retourner les détails de l'utilisateur avec l'URL de l'avatar
+                    return [
                         'id' => $user->id,
                         'name' => $user->name,
                         'email' => $user->email,
                         'avatar' => $avatarUrl,
                     ];
-                }
-            }
-            
-            // Retourner les membres du projet avec leurs avatars
+                });
+    
+            // Retourner les membres du projet avec leurs détails
             return response()->json(['members' => $members], 200);
         } catch (\Exception $e) {
-            // Gérer l'erreur si le projet n'est pas trouvé
-            return response()->json(['error' => 'Project not found'], 404);
+            // Gérer l'erreur si le projet n'est pas trouvé ou s'il y a une autre exception
+            return response()->json(['error' => $e->getMessage()], 404);
         }
     }
+    
+    
+    
+ 
     
 
     public function index(Request $request)

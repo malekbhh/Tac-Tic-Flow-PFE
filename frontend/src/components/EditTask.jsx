@@ -14,6 +14,7 @@ function EditTask({
   userAvatar,
   isChef,
   userName,
+  updateTaskList,
 }) {
   const [editedTitle, setEditedTitle] = useState(task.title);
   const [editedDueDate, setEditedDueDate] = useState(new Date(task.due_date));
@@ -36,6 +37,7 @@ function EditTask({
               user_id: null,
             };
           }
+          updateTaskList();
           return updatedTasks;
         });
 

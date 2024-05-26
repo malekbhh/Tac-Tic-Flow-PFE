@@ -54,6 +54,16 @@ const ProjectDetails = () => {
   });
 
   console.log("Filtered tasks:", filteredTasks); // Ajouter cette ligne pour vérifier les tâches filtrées
+  const updateTaskList = async () => {
+    try {
+      const tasksResponse = await axiosClient.get(
+        `/projects/${projectId}/tasks`
+      );
+      setTasks(tasksResponse.data);
+    } catch (error) {
+      console.error("Error updating task list:", error);
+    }
+  };
 
   const updateMembersList = (updatedMembers) => {
     setMembers(updatedMembers);
@@ -120,6 +130,7 @@ const ProjectDetails = () => {
             projectId={projectId}
             onMemberAdded={handleMemberAdded}
             chefAvatar={chefAvatar} // Passer la fonction de rappel ici
+            updateTaskList={updateTaskList} // Passer la fonction de mise à jour
           />
         )}
 
@@ -145,6 +156,7 @@ const ProjectDetails = () => {
             user={user}
             project={project}
             setTasks={setTasks}
+            updateTaskList={updateTaskList}
           />
         </div>
       </div>

@@ -204,7 +204,7 @@ function SideBar({
                   `}
                 />
                 <span className="flex-1 dark:hover:text-white  ms-3 dark:text-gray-200  text-gray-700 hover:text-black whitespace-nowrap">
-                  Messenger
+                  Chat
                 </span>
               </Link>
             </li>

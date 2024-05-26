@@ -12,6 +12,7 @@ function ListTasks({
   projectId,
   tasks,
   setTasks,
+  updateTaskList,
   isChef,
   searchValue,
   user,
@@ -55,6 +56,7 @@ function ListTasks({
           projectId={projectId}
           isChef={isChef}
           searchValue={searchValue}
+          updateTaskList={updateTaskList}
         />
       ))}
     </div>
@@ -76,6 +78,7 @@ const Section = ({
   projectId,
   isChef,
   setEditTask,
+  updateTaskList,
 }) => {
   const fetchTasks = async () => {
     try {
@@ -185,6 +188,7 @@ const Section = ({
               user={user}
               setTasks={setTasks}
               setEditTask={setEditTask}
+              updateTaskList={updateTaskList}
             />
           ))}{" "}
       </div>
@@ -214,7 +218,15 @@ const Header = ({ text, bg, count }) => {
   );
 };
 
-const Task = ({ task, setTasks, isChef, searchValue, tasks, user }) => {
+const Task = ({
+  task,
+  setTasks,
+  isChef,
+  searchValue,
+  tasks,
+  user,
+  updateTaskList,
+}) => {
   const [userAvatar, setUserAvatar] = useState(null);
   const [edit, setEdit] = useState({});
   const [userName, setUserName] = useState(null);
@@ -306,7 +318,7 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks, user }) => {
         {" "}
       </div>
       <p
-        className="text-gray-800 font-semibold mt-1 dark:text-gray-300 "
+        className="text-gray-800 font-medium mt-1 dark:text-gray-300 "
         style={{ fontSize: "small" }}
       >
         {task.title}
@@ -376,6 +388,7 @@ const Task = ({ task, setTasks, isChef, searchValue, tasks, user }) => {
               isChef={isChef}
               handleCloseEdit={handleCloseEdit}
               setTasks={setTasks}
+              updateTaskList={updateTaskList}
             />
           )}
         </>

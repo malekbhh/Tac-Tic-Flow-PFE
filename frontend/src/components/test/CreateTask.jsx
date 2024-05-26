@@ -120,7 +120,6 @@ function CreateTask({ projectId, setTasks, project }) {
             title: taskName,
             dueDate: dueDate ? dueDate.toISOString().split("T")[0] : null, // Convertir la date au format YYYY-MM-DD
             priority: priority, // Include priority in the request payload
-            priority: priority,
             description: useDescription ? description : null,
           }
         );

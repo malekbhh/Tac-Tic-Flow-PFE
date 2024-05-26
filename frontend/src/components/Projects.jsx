@@ -9,6 +9,8 @@ import EditProject from "./Project/EditProject.jsx"; // Importez le composant Ed
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import crown2 from "../assets/crown2.png";
 import { faSearch, faFilter, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+
 const Projects = ({}) => {
   const { chefProjects, setChefProjects, notifications } = useStateContext();
   const [memberProjects, setMemberProjects] = useState([]);
@@ -239,19 +241,23 @@ const Projects = ({}) => {
         {loadProjectsError ? (
           <p className="text-red-500">{loadProjectsError}</p>
         ) : isLoadingProjects ? (
-          <div className="loader-container m-11 flex justify-start items-center">
+          <div className="loader-container  m-11 flex justify-start items-center">
             <div className="loader"></div>
           </div>
         ) : (
           <>
             {roleFilter !== "member" && (
               <>
-                <h3 className="text-gray-800 dark:text-white font-semibold text-xl mb-4">
+                <h3 className="text-gray-800 dark:text-white font-semibold text-xl mb-4 ">
                   Projects You Own
                 </h3>
                 <div className="flex w-full gap-11 flex-wrap">
                   {!filteredChefProjects || !filteredChefProjects.length ? (
-                    <p className="ml-4">No projects found.</p>
+                    <div className="  flex items-center justify-center lg:w-[1100px] md:w-[700px] w-fit ">
+                      <p className="ml-4 mt-20 text-lg text-slate-600 dark:text-slate-400 ">
+                        No projects found
+                      </p>
+                    </div>
                   ) : (
                     filteredChefProjects.map((project) => (
                       <div key={project.id} className="mb-4 w-72">
@@ -266,9 +272,9 @@ const Projects = ({}) => {
                                 </h2>
                               </button>
                               <Button
-                                className="text-gray-800 dark:text-gray-300"
+                                className="text-gray-700 dark:text-gray-300"
                                 type="text"
-                                icon={<EditOutlined />}
+                                icon={<FontAwesomeIcon icon={faEdit} />}
                                 onClick={() => handleEditProject(project.id)}
                               />
                             </div>
@@ -292,7 +298,7 @@ const Projects = ({}) => {
                               type="text"
                               danger
                               onClick={() => deleteProject(project.id)}
-                              icon={<DeleteOutlined />}
+                              icon={<FontAwesomeIcon icon={faTrash} />}
                             />
                           </div>
                         </div>
@@ -305,15 +311,17 @@ const Projects = ({}) => {
             {roleFilter !== "leader" && (
               <>
                 <h3 className="text-gray-800 mt-11 dark:text-white font-semibold text-xl mb-4">
-                  Projects Invited
+                  Projects You're Involved In
                 </h3>
                 <div className="flex w-full gap-11 flex-wrap">
+                  {" "}
                   {!filteredMemberProjects || !filteredMemberProjects.length ? (
-                    <p className="ml-4">
-                      {" "}
-                      You have not received an invitation to take part in any
-                      projects.
-                    </p>
+                    <div className="  flex items-center justify-center lg:w-[1100px] md:w-[700px] w-fit ">
+                      <p className="ml-4 mt-20 text-lg text-slate-600 dark:text-slate-400 ">
+                        You have not received an invitation to take part in any
+                        projects
+                      </p>
+                    </div>
                   ) : (
                     filteredMemberProjects.map((project) => (
                       <div key={project.id} className="mb-4 w-72">
@@ -323,7 +331,7 @@ const Projects = ({}) => {
                               onClick={() => handleClick(project.id, project)}
                               className="mb-auto"
                             >
-                              <h2 className="font-semibold text-gray-800 dark:text-white mb-2 text-sm">
+                              <h2 className="font-semibold  text-start text-gray-800 dark:text-white mb-2 text-sm">
                                 {project.title}
                               </h2>
                             </button>

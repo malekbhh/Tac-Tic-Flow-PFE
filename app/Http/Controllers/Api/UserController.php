@@ -44,6 +44,7 @@ class UserController extends Controller
         'unreadNotifications'=>$user->unreadNotifications,
 
     ];
+    
 
     // Retourner les données de l'utilisateur
     return response()->json($userData);
@@ -83,11 +84,11 @@ class UserController extends Controller
  }
  public function updatePhoto(Request $request)
  {
-     // Check for file, access control, and validation
-     $validator = Validator::make($request->all(), [
-         'avatar' => 'sometimes|image|mimes:jpeg,png,jpg',
-         'password' => 'sometimes|confirmed', // This requires a matching 'password_confirmation' field
-     ]);
+    $validator = Validator::make($request->all(), [
+        'avatar' => 'sometimes|image|mimes:jpeg,png,jpg', // Adjust limits as needed
+        'password' => 'sometimes|confirmed', // This requires a matching 'password_confirmation' field
+    ]);
+     
  
      if ($validator->fails()) {
          return response()->json($validator->errors(), 422);
@@ -97,36 +98,35 @@ class UserController extends Controller
      $user = Auth::user();
  
      // Handle avatar update if provided
-     if ($request->hasFile('avatar')) {
-         // Get the uploaded file
-         $avatar = $request->file('avatar');
- 
-         // Generate a unique filename with extension
-         $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
- 
-         // Secure storage with access control (consider private storage)
-         $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
-         $path = $disk->put($avatarName, file_get_contents($avatar));
- 
-         if (!$path) {
-             return response()->json(['error' => 'Failed to store avatar'], 500);
-         }
- 
-         // Update the user's avatar path in the database
-         $user->avatar = $avatarName;
-     }
- 
-     // Update user fields if provided
-     if ($request->filled('name')) {
-         $user->name = $request->input('name');
-     }
-     if ($request->filled('email')) {
-         $user->email = $request->input('email');
-     }
-     if ($request->filled('password')) {
-         $user->password = bcrypt($request->input('password')); // Hash the password for security
-     }
- 
+    // Handle avatar update if provided
+    if ($request->hasFile('avatar')) {
+        // Get the uploaded file
+        $avatar = $request->file('avatar');
+
+        // Generate a unique filename with extension
+        $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
+
+        // Secure storage with access control (consider private storage)
+        $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
+        $path = $disk->put($avatarName, $avatar->getContent());
+
+        if (!$path) {
+            return response()->json(['error' => 'Failed to store avatar'], 500);
+        }
+
+        // Update the user's avatar path in the database
+        $user->avatar = $avatarName;
+    }
+  // Update user fields if provided
+  if ($request->filled('name')) {
+    $user->name = $request->input('name');
+}
+if ($request->filled('email')) {
+    $user->email = $request->input('email');
+}
+if ($request->filled('password')) {
+    $user->password = bcrypt($request->input('password')); // Hash the password for security
+}
      // Save the user's updates
      $user->save();
  

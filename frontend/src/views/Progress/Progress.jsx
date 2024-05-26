@@ -127,47 +127,52 @@ function Progress() {
 
   return (
     <div className="mr-2 mt-8">
-      <div className="fixed top-6 flex mt-2 items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-96 ">
+      <div className="fixed top-6 flex mt-2 text-gray-500 dark:text-gray-300 items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-96 shadow-md">
         <input
           type="text"
-          className="bg-transparent  focus:outline-none text-gray-300"
+          className="bg-transparent focus:outline-none placeholder-gray-600 dark:placeholder-gray-300"
           placeholder="Search..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
         />
-        <FontAwesomeIcon icon={faSearch} className="h-4 text-slate-500" />
+        <FontAwesomeIcon icon={faSearch} className="h-4" />
         <button
           onClick={toggleDropdown}
-          className="relative focus:outline-none"
+          className="relative focus:outline-none ml-2"
         >
-          <div className="flex justify-center dark:text-gray-400 items-center gap-2">
+          <div className="flex justify-center items-center gap-2">
             {getFilterLabel()}{" "}
-            <FontAwesomeIcon icon={faFilter} className="h-4 text-slate-500" />
+            <FontAwesomeIcon icon={faFilter} className="h-4" />
           </div>
           {isDropdownVisible && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute right-0 mt-2 w-48 bg-white  dark:bg-black dark:bg-opacity-30 border rounded shadow-lg z-10"
+            >
               <button
-                className="block w-full text-left px-4 py-2 hover:bg-gray-200  justify-between items-center"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-black dark:hover:bg-opacity-50  justify-between items-center"
                 onClick={() => handleFilterChange("all")}
               >
                 All Projects{" "}
                 {roleFilter === "all" && <FontAwesomeIcon icon={faCheck} />}
               </button>
               <button
-                className="block w-full text-left px-4 py-2 hover:bg-gray-200  justify-between items-center"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-black dark:hover:bg-opacity-50  justify-between items-center"
                 onClick={() => handleFilterChange("leader")}
               >
                 Project Leader{" "}
                 {roleFilter === "leader" && <FontAwesomeIcon icon={faCheck} />}
               </button>
               <button
-                className="block w-full text-left px-4 py-2 hover:bg-gray-200  justify-between items-center"
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-black dark:hover:bg-opacity-50  justify-between items-center"
                 onClick={() => handleFilterChange("member")}
               >
                 Member{" "}
                 {roleFilter === "member" && <FontAwesomeIcon icon={faCheck} />}
               </button>
-            </div>
+            </motion.div>
           )}
         </button>
       </div>
@@ -182,17 +187,40 @@ function Progress() {
           transition={{ duration: 0.5 }}
         >
           <div className="flex mt-16 mb-10 flex-wrap gap-6">
-            {filteredProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={() => handleProjectClick(project.id)}
-                isSelected={selectedProjectId === project.id}
-              />
-            ))}
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProjectCard
+                    project={project}
+                    onClick={() => handleProjectClick(project.id)}
+                    isSelected={selectedProjectId === project.id}
+                  />
+                </motion.div>
+              ))
+            ) : (
+              <div className="w-full text-center mt-10">
+                {roleFilter === "leader" ? (
+                  <p className="text-gray-500 text-lg">
+                    Projects You Own - No projects found.
+                  </p>
+                ) : roleFilter === "member" ? (
+                  <p className="text-gray-500 text-lg">
+                    Projects Invited - You have not received an invitation to
+                    take part in any projects.
+                  </p>
+                ) : (
+                  <p className="text-gray-500 text-lg">No projects found.</p>
+                )}
+              </div>
+            )}
           </div>
           {totalPages > 1 && (
-            <div className="flex mr-[10%] justify-center">
+            <div className="flex justify-center">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
