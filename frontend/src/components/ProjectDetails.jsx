@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "../axios-client.js";
 import ListTasks from "./test/ListTasks";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import ProjectMembers from "./projectDetails/ProjectMembers";
 import ProjectHeader from "./projectDetails/ProjectHeader.jsx";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import { useLocation } from "react-router-dom";
-// import { useStateContext } from "../context/ContextProvider.jsx";
 const ProjectDetails = () => {
   const location = useLocation();
   const { projectId, project, isChef, chefAvatar } = location.state;
@@ -21,14 +20,10 @@ const ProjectDetails = () => {
   const [isDropSelectdownOpen, setDropSelectdownOpen] = useState(false);
   const [filterType, setFilterType] = useState("all");
 
-  // Définissez une fonction pour changer le type de filtre
-  // Définissez une fonction pour changer le type de filtre
   const handleFilterChange = (filter) => {
-    console.log("Filter changed to:", filter);
     setFilterType(filter);
   };
 
-  // Filtrer les tâches en fonction du type de filtre sélectionné
   const filteredTasks = tasks.filter((task) => {
     if (filterType === "all") {
       return true; // Afficher toutes les tâches
@@ -53,7 +48,6 @@ const ProjectDetails = () => {
     }
   });
 
-  console.log("Filtered tasks:", filteredTasks); // Ajouter cette ligne pour vérifier les tâches filtrées
   const updateTaskList = async () => {
     try {
       const tasksResponse = await axiosClient.get(
@@ -80,7 +74,6 @@ const ProjectDetails = () => {
           `/projects/${projectId}/tasks`
         );
         setTasks(tasksResponse.data);
-        console.log(tasksResponse.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -96,7 +89,6 @@ const ProjectDetails = () => {
           `/projects/${projectId}/members`
         );
         setMembers(response.data.members);
-        console.log(members);
       } catch (error) {
         console.error("Error fetching project members:", error);
       } finally {

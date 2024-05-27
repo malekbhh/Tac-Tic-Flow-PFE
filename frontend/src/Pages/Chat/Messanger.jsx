@@ -5,7 +5,7 @@ import ChatUser from "../../components/organism/ChatUser";
 import MessageBox from "../../components/organism/MessageBox";
 import Message from "../../components/organism/Message";
 import axiosClient from "../../axios-client";
-import { UserOutlined } from "@ant-design/icons"; // Import de l'icône utilisateur par défaut
+import { UserOutlined } from "@ant-design/icons";
 import pic from "../../assets/file.png";
 import send from "../../assets/send.png";
 const Messenger = ({ user }) => {

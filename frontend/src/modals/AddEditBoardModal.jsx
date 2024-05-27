@@ -1,4 +1,3 @@
-// AddEditBoardModal.jsx
 import React, { useState } from "react";
 import axiosClient from "../axios-client.js";
 import DatePicker from "react-datepicker";
@@ -6,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import toast from "react-hot-toast";
 import { useStateContext } from "../context/ContextProvider";
 
-function AddEditBoardModal({ setBoardModalOpen, type, updateNotifications }) {
+function AddEditBoardModal({ setBoardModalOpen, type }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadlineError, setDeadlineError] = useState("");

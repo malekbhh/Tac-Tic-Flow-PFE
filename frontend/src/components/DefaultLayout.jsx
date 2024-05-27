@@ -13,30 +13,14 @@ import SideBar from "./contentsDefaultLayout/SideBar.jsx";
 
 const DefaultLayout = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(false);
+  const [setOpenDropdown] = useState(false);
   const [boardModalOpen, setBoardModalOpen] = useState(false);
-  const [boardType, setBoardType] = useState("add");
+  const [boardType] = useState("add");
   const { user, token, setUser, setToken } = useStateContext();
   const [isOpen, setIsOpen] = useState(true);
-  const [isNotificationOpen, setNotificationOpen] = useState(false); // Nouvel état pour suivre l'état de la boîte de dialogue de notification
+  const [isNotificationOpen, setNotificationOpen] = useState(false);
   const { setUnreadNotifications, unreadNotifications } = useStateContext();
-  // useEffect(() => {
-  //   const fetchUnreadNotifications = async () => {
-  //     try {
-  //       const response = await axiosClient.get("/notifications/unread");
-  //       setUnreadNotifications(response.data.unreadNotifications);
-  //       console.log(unreadNotifications);
-  //       setUser((prevUser) => ({
-  //         ...prevUser,
-  //         unreadNotifications: unreadNotifications,
-  //       }));
-  //     } catch (error) {
-  //       console.error("Error fetching unread notifications:", error);
-  //     }
-  //   };
 
-  //   fetchUnreadNotifications();
-  // }, [setUnreadNotifications]);
   const handleDropdownToggle = () => {
     setDropdownOpen(!isDropdownOpen);
   };

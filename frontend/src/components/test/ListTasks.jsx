@@ -120,7 +120,7 @@ const Section = ({
 
   const canDrop = async (item) => {
     try {
-      // Faites une requête POST à la route '/tasks/check-can-drop' pour vérifier si l'utilisateur peut déplacer la tâche
+      //vérifier si l'utilisateur peut déplacer la tâche
       const taskMembershipResponse = await axiosClient.post(
         `/tasks/${item.id}/check-can-drop`,
         { isChef }
@@ -262,7 +262,7 @@ const Task = ({
     if (tasks.find((t) => t.id === task.id)) {
       fetchUserInformation();
     } else {
-      // Si la tâche n'existe pas, définir l'avatar sur null
+      // Si la tâche n'existe pas, l'avatar -> null
       setUserAvatar(null);
     }
   }, [task.id, tasks]);
@@ -270,7 +270,6 @@ const Task = ({
   const handleRemove = async () => {
     try {
       await axiosClient.delete(`/tasks/${task.id}`);
-      // Mettre à jour localement la liste des tâches après suppression
       setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
       toast.success("Task removed successfully");
     } catch (error) {
@@ -282,13 +281,13 @@ const Task = ({
   function getColorBasedOnPriority(priority) {
     switch (priority) {
       case "low":
-        return "bg-green-400"; // Green for low priority
+        return "bg-green-400";
       case "medium":
-        return "bg-orange"; // Pink for medium priority
+        return "bg-orange";
       case "high":
-        return "bg-red-500"; // Orange for high priority
+        return "bg-red-500";
       default:
-        return "bg-gray-400"; // Default color if priority is not defined
+        return "bg-gray-400";
     }
   }
   const handleCloseEdit = () => {

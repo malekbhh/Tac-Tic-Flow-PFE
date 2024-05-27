@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import boardicon from "../assets/boardicon.png";
 import darkIcon from "../assets/111.png";
 import lightIcon from "../assets/daymode.png";
 import { Switch } from "@headlessui/react";
 import useDarkMode from "../Hooks/useDarkMode";
 
-function HeaderDropdown({ setOpenDropdown, setBoardModalOpen }) {
+function HeaderDropdown({ setOpenDropdown }) {
   const [colorTheme, setTheme] = useDarkMode();
   const [darkSide, setDarkSide] = useState(
     colorTheme === "light" ? true : false

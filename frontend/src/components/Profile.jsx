@@ -17,8 +17,8 @@ function Profile() {
   useEffect(() => {
     const fetchUser = async () => {
       setPhotoPreview(user.avatar);
-      setName(user.name || ""); // Ajouter une vérification pour éviter null ou undefined
-      setEmail(user.email || ""); // Ajouter une vérification pour éviter null ou undefined
+      setName(user.name || "");
+      setEmail(user.email || "");
     };
 
     fetchUser();

@@ -5,7 +5,7 @@ import { createRef } from "react";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa"; // Import de l'icône de flèche vers la gauche
+import { FaArrowLeft } from "react-icons/fa";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +14,6 @@ function Login() {
   const passwordRef = createRef();
   const { setUser, setToken } = useStateContext();
   const [message, setMessage] = useState(null);
-  const [value, setValue] = useState("");
   const [redirect, setRedirect] = useState(false);
   const navigate = useNavigate();
 
@@ -44,10 +43,10 @@ function Login() {
 
         const userrole = data.user.role;
         if (userrole === "admin") {
-          navigate("/projects"); // Correction ici
+          navigate("/projects");
         } else {
           console.log("trueeeee");
-          navigate("/projects"); // Correction ici
+          navigate("/projects");
         }
       })
       .catch((err) => {
@@ -68,12 +67,6 @@ function Login() {
         <h2 className="text-2xl font-bold text-gray-300 mb-4 pt-2 ">
           Login into your account
         </h2>
-
-        {/* <div className="m-4 self-stretch flex flex-row items-center justify-center gap-2">
-          <div className="h-px w-16 bg-gray-200" />
-          <div className="text-gray-300 text-xs">Login with Email</div>
-          <div className="h-px w-16 bg-gray-200" />
-        </div> */}
 
         <form className="flex flex-col items-center gap-4" onSubmit={onSubmit}>
           <input
@@ -122,12 +115,7 @@ function Login() {
               <p className="font-medium text-sm">{message}</p>
             </div>
           )}
-          <button
-            // style={{
-            //   background: "linear-gradient(234.84deg, #212177 27.56%, #ce3fa5)",
-            // }}
-            className="h-10 w-32 bg-midnightblue  text-white flex items-center justify-center font-medium mt-4 rounded-xl transition duration-300 hover:shadow-lg"
-          >
+          <button className="h-10 w-32 bg-midnightblue  text-white flex items-center justify-center font-medium mt-4 rounded-xl transition duration-300 hover:shadow-lg">
             Login
           </button>
         </form>

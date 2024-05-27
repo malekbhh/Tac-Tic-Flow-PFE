@@ -1,12 +1,3 @@
-// import React from "react";
-// bg-[#212177]
-// function FooterHome() {
-//   return (
-//
-//   );
-// }
-
-// export default FooterHome;
 import React from "react";
 
 function FooterHome() {

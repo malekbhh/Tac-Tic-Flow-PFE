@@ -3,10 +3,8 @@ import DefaultLayout from "./components/DefaultLayout";
 import GuestLayout from "./components/GuestLayout";
 import Login from "./views/Login";
 import NotFound from "./views/NotFound";
-import Signup from "./views/Signup";
 import User from "./views/User";
 import Home from "./views/Home.jsx";
-
 import ResetPassword from "./views/ResetPassword.jsx";
 import Projects from "./components/Projects.jsx";
 import UserAdmin from "./views/UserAdmin/UsersAdmin.jsx";
@@ -79,10 +77,7 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
-      {
-        path: "/signup",
-        element: <Signup />,
-      },
+
       {
         path: "/home",
         element: <Home />,
@@ -97,11 +92,6 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
-
-  // {
-  //   path: "dash",
-  //   element: <Dashboardd1 />,
-  // },
 ]);
 
 export default router;

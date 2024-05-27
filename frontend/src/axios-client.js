@@ -24,7 +24,6 @@ axiosClient.interceptors.request.use((config) => {
       localStorage.removeItem('ACCESS_TOKEN')
       window.location.reload();
     } else if (response.status === 404) {
-      //Show not found
     }
   
     throw error;

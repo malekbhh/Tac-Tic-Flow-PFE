@@ -15,8 +15,7 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-import EventForm from "./EventForm"; // Import du formulaire d'ajout d'événement
-
+import EventForm from "./EventForm";
 function Calendar() {
   const [userEvents, setUserEvents] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);

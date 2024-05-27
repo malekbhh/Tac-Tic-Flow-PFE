@@ -1,8 +1,6 @@
 .chatContainer {
     display: flex;
-    /* flex-direction: ; */
-    /* min-height: 60vh; */
-    /* padding: 20px; */
+   
     width: 60vw;
     height: 80vh;
     border-radius: 10px;
@@ -21,9 +19,7 @@
     border-bottom: 2px solid white;
 }
 .chatBody {
-    /* height: 100px; */
     flex: 1;
-    /* padding: 10px; */
     border-radius: 0px 10px 10px 0px;
     display: flex;
     flex-direction: column;
@@ -39,8 +35,6 @@
 .chatUserList {
     width: 300px;
     padding: 5px;
-    /* display: flex; */
-    /* flex-direction: column; */
     gap: 10px;
     border-radius: 10px 0px 0px 10px;
     border-right: 2px solid white;
@@ -51,8 +45,6 @@
     padding: 20px;
     margin: 5px;
     flex: 1;
-    /* display: flex; */
-    /* flex-direction: column; */
     gap: 20px;
     max-height: 550px;
     overflow: scroll;
@@ -73,6 +65,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-color: red; */
     height: 100%;
 }

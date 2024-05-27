@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons"; // Import de l'icône utilisateur par défaut
+import { UserOutlined } from "@ant-design/icons";
 
 const Message = ({ align, message, createdAt, user }) => {
   const formatMessageDate = (createdAt) => {
@@ -20,16 +20,13 @@ const Message = ({ align, message, createdAt, user }) => {
       messageDate.getFullYear() === yesterday.getFullYear();
 
     if (isToday) {
-      // Aujourd'hui
       return messageDate.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });
     } else if (isYesterday) {
-      // Hier
       return "Hier";
     } else {
-      // Autre date
       return messageDate.toLocaleDateString("fr-FR", {
         day: "2-digit",
         month: "2-digit",
@@ -38,7 +35,6 @@ const Message = ({ align, message, createdAt, user }) => {
     }
   };
 
-  // Formater la date du message
   const formattedDate = formatMessageDate(createdAt);
 
   return (

@@ -26,73 +26,71 @@ use App\Http\Controllers\EventsController;
 
 Route::middleware('auth:sanctum')->group(function () {
 
-   //Organisation Code 
-   Route::get('/user1', [UserController::class, 'getUser']);
-   Route::post('/projects', [ProjectController::class, 'store']);
-
-   Route::get('/projectsWithRole', [ProjectController::class, 'showProjectsWithRole']);
-   Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-   Route::get('projects/{projectId}/members', [ProjectController::class, 'showMembers']);
-   Route::get('/projects/{projectId}/chef/avatar', [ProjectController::class, 'getProjectChefAvatar']);
-   Route::put('/projects/{id}', [ProjectController::class, 'update']);
-   Route::get('/projects/{id}', [ProjectController::class, 'show']);
-
-   Route::get('/usersNotMembers', [UserController::class, 'usersNotMembers']);
-   Route::post('/add-member-to-project', [MembershipController::class, 'addMemberToProject']);
-   Route::delete('/remove-member-from-project', [MembershipController::class,'removeMemberFromProject']);
-   Route::post('/projects/{projectId}/tasks', [TaskController::class, 'createTask']);
-   Route::delete('/tasks/{taskId}', [TaskController::class, 'deleteTask']);
-   Route::get('/projects/{projectId}/tasks', [TaskController::class, 'getTasksByProjectId']);
-   Route::put('/projects/{projectId}/tasks/{taskId}/assign',[TaskController::class,'assignTask']);
-   Route::post('/tasks/{taskId}/status', [TaskController::class, 'updateTaskStatus']);
-   Route::post('/tasks/{taskId}/check-can-drop', [TaskController::class,'canDropTask']);
+  
    Route::post('/user/avatar', [UserController::class, 'updatePhoto']);
-   Route::get('/users/{taskId}/avatar', [UserController::class, 'getUserByTaskId']);
-  //pour progress
-   Route::get('/projects', [ProjectController::class, 'index']);
-   Route::get('/tasks/project/{projectId}', [TaskController::class, 'getTasksByProjectUserId']);
-   Route::get('/memberships/{projectId}', [MembershipController::class, 'getProjectMembers']);
-   Route::get('/tasks/project/{projectId}/member/{memberId}', [TaskController::class, 'getTasksByProjectAndMember']);
-   Route::post('/tasksUpdate/{id}', [TaskController::class, 'updateTask']);
-   Route::post('/tasks/{id}/upload',  [TaskController::class, 'uploadAttachment']);
 
-   Route::get('/download-file', [TaskController::class, 'downloadFile'])->name('downloadFile');
-   
-   Route::post('/check-user-role', [MembershipController::class, 'checkUserRoleForProject']);
-//photo
-Route::get('/download', [TaskController::class, 'download']);
-// Task routes
-Route::post('/tasks/{taskId}/add-link-url', [TaskController::class, 'addLinkUrl']);
-Route::get('/tasks/{taskId}/links', [TaskController::class, 'getTaskLinks']);
-Route::delete('/links/{linkId}', [TaskController::class, 'deleteLink']);
-  //pour user 
+  //organisation
+  //user
+  Route::get('/user1', [UserController::class, 'getUser']);
+   Route::get('/user1/{id}', [UserController::class, 'getUserById']);
+
   Route::get('/usersAccount', [UserController::class, 'indexUsers']);
   Route::post('/usersAccount', [UserController::class, 'storee']);
   Route::delete('/usersAccount/{user}', [UserController::class, 'destroyUsers']);
-  //pour messenger
-  Route::get('/user-messages/{userId}', [ChatController::class, 'getUserMessages']);
+//Projects
+Route::get('/projects/{id}', [ProjectController::class, 'show']);
+Route::put('/projects/{id}', [ProjectController::class, 'update']);
+Route::post('/projects', [ProjectController::class, 'store']);
+
+Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+
+Route::post('/add-member-to-project', [MembershipController::class, 'addMemberToProject']);
+Route::delete('/remove-member-from-project', [MembershipController::class,'removeMemberFromProject']);
+Route::get('/projectsWithRole', [ProjectController::class, 'showProjectsWithRole']);
+Route::get('/projects/{projectId}/chef/avatar', [ProjectController::class, 'getProjectChefAvatar']);
+
+//Task
+Route::get('/projects/{projectId}/tasks', [TaskController::class, 'getTasksByProjectId']);
+Route::post('/projects/{projectId}/tasks', [TaskController::class, 'createTask']);
+Route::put('/projects/{projectId}/tasks/{taskId}/assign',[TaskController::class,'assignTask']);
+Route::post('/tasks/{taskId}/status', [TaskController::class, 'updateTaskStatus']);
+Route::post('/tasks/{taskId}/check-can-drop', [TaskController::class,'canDropTask']);
+Route::delete('/tasks/{taskId}', [TaskController::class, 'deleteTask']);
+Route::put('/tasks/{id}/remove-member', [TaskController::class, 'removeMemberFromTask']);
+Route::post('/tasksUpdate/{id}', [TaskController::class, 'updateTask']);
+
+//Member 
+// Route::put('/projects/{projectId}/tasks/{taskId}/assign',[TaskController::class,'assignTask']);
+Route::get('/users/{taskId}/avatar', [UserController::class, 'getUserByTaskId']);
+Route::get('/usersNotMembers', [UserController::class, 'usersNotMembers']);
+Route::get('projects/{projectId}/members', [ProjectController::class, 'showMembers']);
+Route::post('/check-user-role', [MembershipController::class, 'checkUserRoleForProject']);
+// Route::get('/memberships/{projectId}', [MembershipController::class, 'getProjectMembers']);
+
+  //Chat
   Route::get('/chat-users', [UserController::class, 'getChatUsers'])->name('chat-user-list');
-  Route::get('/user1/{id}', [UserController::class, 'getUserById']);
   Route::post('/send/message', [ChatController::class, 'sendMessage'])->name('send.message');
-  //pour notifications
-  Route::post('/notifications/update-unread',[NotificationController::class, 'updateUnreadNotifications']);
-  Route::get('/notifications/unread', [NotificationController::class, 'getUnreadNotifications']);
+  Route::get('/user-messages/{userId}', [ChatController::class, 'getUserMessages']);
 
-  Route::get('/unread-notifications',[NotificationController::class, 'getUnreadNotifications']);
-
+  //Notifications
   Route::get('/notifications', [NotificationController::class, 'getNotifications']);
-
-  // Endpoint pour envoyer une notification à un utilisateur
+  Route::post('/notifications/update-unread',[NotificationController::class, 'updateUnreadNotifications']);
   Route::post('/send-notification', [NotificationController::class, 'sendMessage']);
+//Link 
+Route::post('/tasks/{taskId}/add-link-url', [TaskController::class, 'addLinkUrl']);
+Route::get('/tasks/{taskId}/links', [TaskController::class, 'getTaskLinks']);
+Route::delete('/links/{linkId}', [TaskController::class, 'deleteLink']);
 
-  Route::put('/tasks/{id}/remove-member', [TaskController::class, 'removeMemberFromTask']);
 
-
-
-  //calendar
+  //Calendar
   Route::post('/events', [EventsController::class, 'store']);
   Route::get('/events', [EventsController::class, 'index']); // Récupérer les événements de l'utilisateur authentifié
   Route::delete('/events/{id}', [EventsController::class, 'destroy']);
+
+  //Progress
+  Route::get('/projects', [ProjectController::class, 'index']);
+  Route::get('/tasks/project/{projectId}/member/{memberId}', [TaskController::class, 'getTasksByProjectAndMember']);
+  Route::get('/tasks/project/{projectId}', [TaskController::class, 'getTasksByProjectUserId']);
 
   Route::post('/logout', [AuthController::class, 'logout']);
 });

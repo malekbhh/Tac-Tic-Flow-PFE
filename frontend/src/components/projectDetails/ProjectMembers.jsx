@@ -1,13 +1,11 @@
-// ProjectMembers.jsx
 import React from "react";
-import { Avatar, Button } from "antd";
+import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import axiosClient from "../../axios-client";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const ProjectMembers = ({
   members,
-  updateNotifications,
   setShowMembers,
   project,
   isChef,
@@ -16,9 +14,8 @@ const ProjectMembers = ({
   tasks,
   setTasks,
 }) => {
-  const handleRemoveMember = async (userId, memberName) => {
+  const handleRemoveMember = async (userId) => {
     try {
-      // Effectuez une requête DELETE au serveur pour supprimer le membre du projet
       await axiosClient.delete(`/remove-member-from-project`, {
         data: { projectId, userId },
       });
@@ -36,7 +33,7 @@ const ProjectMembers = ({
     }
   };
   const sendNotificationToUser = (userId) => {
-    const notificationMessage = `Vous avez été supprimé du projet ${project.title} par le chef de projet.`;
+    const notificationMessage = `You have been removed from the project "${project.title}"`;
 
     axiosClient
       .post("/send-notification", {

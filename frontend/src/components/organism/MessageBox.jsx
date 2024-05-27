@@ -25,8 +25,6 @@ const MessageBox = ({ selected, setMessages, userId }) => {
           message: message,
           receiver_id: selected,
         })
-        // Dans le composant MessageBox
-        // Dans le composant MessageBox
         .then((res) => {
           setMessages((prevItems) => [...prevItems, res.data.message]);
         })

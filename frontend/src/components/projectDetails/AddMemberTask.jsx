@@ -52,7 +52,7 @@ function AddMemberTask({
   };
 
   const sendNotificationToUser = (memberId, taskTitle) => {
-    const notificationMessage = `Vous avez été ajouté au task "${taskTitle} " de projet " ${project.title}"`;
+    const notificationMessage = `You have been added to the task "${taskTitle}" in project "${project.title}"`;
 
     axiosClient
       .post("/send-notification", {

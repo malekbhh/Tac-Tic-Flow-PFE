@@ -13,8 +13,6 @@ const NotificationComponent = () => {
       try {
         const response = await axiosClient.get("/notifications");
         setNotifications(response.data.notifications);
-
-        console.log(user);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       }
@@ -49,19 +47,6 @@ const NotificationComponent = () => {
   }, [user.id, setNotifications, , setUnreadNotifications]);
 
   return (
-    //     <div>
-    //       <h2>Notifications</h2>
-    //       <ul>
-    //         {notifications.map((notification, index) => (
-    //           <li key={index}>{notification.notification}</li>
-    //         ))}
-    //       </ul>
-    //     </div>
-    //   );
-    // };
-
-    // export default NotificationComponent;
-
     <div className="my-3">
       <h2 className="text-lg font-semibold mb-2">Notifications</h2>
       <List

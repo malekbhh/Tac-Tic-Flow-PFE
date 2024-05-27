@@ -17,7 +17,6 @@ const EditProject = ({ projectId, onClose, onUpdate }) => {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    // Charger les données du projet à éditer
     const loadProjectData = async () => {
       try {
         const response = await axiosClient.get(`/projects/${projectId}`);
@@ -67,7 +66,7 @@ const EditProject = ({ projectId, onClose, onUpdate }) => {
           : null,
       });
       toast.success("Project updated successfully!");
-      onUpdate(response.data.project); // Mettre à jour le projet dans l'état local
+      onUpdate(response.data.project);
       onClose(); // Fermer le formulaire après une mise à jour réussie
     } catch (error) {
       toast.error("Error updating project!");

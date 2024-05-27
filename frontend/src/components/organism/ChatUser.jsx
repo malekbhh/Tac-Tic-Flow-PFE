@@ -3,8 +3,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Avatar, Divider, List, Skeleton } from "antd";
 import axiosClient from "../../axios-client";
 import { Link } from "react-router-dom";
-import { UserOutlined } from "@ant-design/icons"; // Import de l'icône utilisateur
-
+import { UserOutlined } from "@ant-design/icons";
 const ChatUser = ({ user, onUserSelect }) => {
   const [total, setTotal] = useState(100);
   const [loading, setLoading] = useState(false);
@@ -23,7 +22,7 @@ const ChatUser = ({ user, onUserSelect }) => {
         setTotal(res.data.total);
         setHasMore(false);
 
-        // Récupération des avatars pour chaque utilisateur
+        //avatars pour chaque utilisateur
         const userAvatars = await Promise.all(
           res.data.data.map(async (user) => {
             try {
@@ -36,7 +35,7 @@ const ChatUser = ({ user, onUserSelect }) => {
               };
             } catch (error) {
               console.error("Error fetching user avatar:", error);
-              return user; // Utiliser les données de l'utilisateur sans avatar en cas d'erreur
+              return user;
             }
           })
         );
@@ -89,12 +88,8 @@ const ChatUser = ({ user, onUserSelect }) => {
             className="text-white"
             dataSource={data}
             renderItem={(item, index) => (
-              <div
-                onClick={() => onUserSelect(item)} // Appel de la fonction onUserSelect avec l'utilisateur sélectionné
-              >
+              <div onClick={() => onUserSelect(item)}>
                 <Link className="dark:text-gray-300" to={`/chat/${item.id}`}>
-                  {" "}
-                  {/* Utilisation de Link avec l'URL spécifiée */}
                   <List.Item
                     style={{ padding: "10px", gap: "0px" }}
                     className={user?.id == item.id ? "selected" : ""}

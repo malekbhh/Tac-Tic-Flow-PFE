@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { useStateContext } from "../context/ContextProvider.jsx";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
-import { DeleteOutlined, UserOutlined, EditOutlined } from "@ant-design/icons";
-import EditProject from "./Project/EditProject.jsx"; // Importez le composant EditProject
+import { UserOutlined } from "@ant-design/icons";
+import EditProject from "./Project/EditProject.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import crown2 from "../assets/crown2.png";
 import { faSearch, faFilter, faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -29,9 +29,9 @@ const Projects = ({}) => {
 
   useEffect(() => {
     if (filteredMemberProjects.length > 0) {
-      const firstProject = filteredMemberProjects[0]; // Sélectionner le premier projet membre
+      const firstProject = filteredMemberProjects[0];
       setSelectedChefAvatar(firstProject.chef_avatar); // Mettre à jour l'avatar du chef
-      setSelectedChefName(firstProject.chef_name); // Mettre à jour le nom du chef
+      setSelectedChefName(firstProject.chef_name);
     }
   }, [filteredMemberProjects]);
   const handleProjectUpdate = (updatedProject) => {

@@ -5,7 +5,7 @@ function SelectPriority({ priority, setPriority }) {
 
   const handleItemClick = (value) => {
     setPriority(value);
-    setIsOpen(false); // Close the list when an item is clicked
+    setIsOpen(false);
   };
 
   return (
